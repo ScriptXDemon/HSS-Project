@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: hss-api
+    runtime: node
+    rootDir: .
+    buildCommand: npm install && npm run build:api
+    startCommand: npm run start -w apps/api
+    healthCheckPath: /api/health/live
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: DEFAULT_DB_ENGINE
+        value: mongo
+      - key: AUTH_TRUST_HOST
+        value: true

@@ -1,36 +1,97 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Hindu Suraksha Sangh Monorepo
 
-## Getting Started
+This repository is split for deployment:
 
-First, run the development server:
+- `apps/web`: Next.js frontend for Netlify
+- `apps/api`: Next.js API/Auth backend for Render
+- `packages/domain`: shared DTOs, validators, and contracts
+
+## Local development
+
+1. Install dependencies from the repo root:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Copy env templates:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+copy .env.example .env.local
+copy apps\web\.env.example apps\web\.env.local
+copy apps\api\.env.example apps\api\.env.local
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. Fill the required values:
 
-## Learn More
+- `apps/api/.env.local`
+  - `MONGODB_URI`
+  - `NEXTAUTH_SECRET`
+  - `ENCRYPTION_KEY`
+  - `ADMIN_BOOTSTRAP_TOKEN`
+- `apps/web/.env.local`
+  - `NEXT_PUBLIC_SITE_URL`
+  - `BACKEND_INTERNAL_URL`
 
-To learn more about Next.js, take a look at the following resources:
+4. Run the backend:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run dev:api
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+5. Run the frontend in a second terminal:
 
-## Deploy on Vercel
+```bash
+npm run dev:web
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+6. Open:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `http://localhost:3000`
+- `http://localhost:3001/api/health/live`
+
+## Bootstrap the first admin
+
+The demo hardcoded admin has been removed. Create the first admin once with:
+
+```http
+POST /api/auth/bootstrap-admin
+Content-Type: application/json
+
+{
+  "token": "<ADMIN_BOOTSTRAP_TOKEN>",
+  "name": "Your Admin Name",
+  "email": "admin@example.com",
+  "phone": "9876543210",
+  "password": "StrongPass@123"
+}
+```
+
+The bootstrap route only works while no admin or super-admin exists.
+
+## Production deployment
+
+### Netlify
+
+- deploy from the repo root
+- build command: `npm run build:web`
+- publish directory: `apps/web/.next`
+- proxy `/api/*` to the Render backend using `netlify.toml`
+
+### Render
+
+- create a web service from the repo root
+- use `render.yaml`
+- set `NEXTAUTH_URL` to the Render API origin
+- use MongoDB Atlas, not local MongoDB
+- use Cloudflare R2 for uploads and set `DISABLE_LOCAL_UPLOAD_FALLBACK=true`
+
+## Verification
+
+```bash
+npm run typecheck
+npm run test
+npm run build
+```
+
+See `REQUIREMENTS.md` for environment and deployment requirements.

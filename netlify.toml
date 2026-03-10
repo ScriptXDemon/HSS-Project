@@ -1,0 +1,13 @@
+[build]
+  base = "."
+  command = "npm run build:web"
+  publish = "apps/web/.next"
+
+[build.environment]
+  NETLIFY_NEXT_PLUGIN_SKIP = "false"
+
+[[redirects]]
+  from = "/api/*"
+  to = "https://your-render-service.onrender.com/api/:splat"
+  status = 200
+  force = true
