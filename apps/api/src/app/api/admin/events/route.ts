@@ -1,17 +1,10 @@
-﻿import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { createErrorResponse } from '@/lib/api';
-import { auth } from '@/lib/auth';
-import { AppError } from '@/lib/errors';
+import { requireAdminSession } from '@/lib/server-auth';
 import { createAdminEvent, getAdminEventsData } from '@/lib/services/admin-dashboard';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-
-function assertAdminRole(role?: string) {
-  if (role !== 'ADMIN' && role !== 'SUPER_ADMIN') {
-    throw new AppError('Unauthorized', 401);
-  }
-}
 
 function getTextField(formData: FormData, key: string) {
   const value = formData.get(key);
@@ -25,6 +18,7 @@ function getOptionalFile(formData: FormData, key: string) {
 
 export async function GET() {
   try {
+    await requireAdminSession();
     const events = await getAdminEventsData();
     return NextResponse.json({ events });
   } catch (error) {
@@ -34,10 +28,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const session = await auth();
-    const role = (session?.user as { role?: string } | undefined)?.role;
-    assertAdminRole(role);
-
+    await requireAdminSession();
     const formData = await request.formData();
     const event = await createAdminEvent({
       title: getTextField(formData, 'title'),

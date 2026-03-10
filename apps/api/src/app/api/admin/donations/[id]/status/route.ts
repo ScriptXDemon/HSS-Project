@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createErrorResponse } from '@/lib/api';
+import { requireAdminSession } from '@/lib/server-auth';
 import { AppError } from '@/lib/errors';
 import { updateDonationStatus } from '@/lib/services/admin-dashboard';
 
@@ -8,6 +9,7 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
+    await requireAdminSession();
     const body = (await request.json()) as { status?: string };
     const status = body.status;
 

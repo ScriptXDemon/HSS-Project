@@ -48,15 +48,6 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  if (pathname.startsWith('/api/admin')) {
-    if (!token) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-    if (role !== 'ADMIN' && role !== 'SUPER_ADMIN') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
-  }
-
   const response = NextResponse.next();
   response.headers.set('Content-Security-Policy', buildContentSecurityPolicy());
   response.headers.set('X-Frame-Options', 'DENY');
@@ -78,6 +69,5 @@ export const config = {
     '/admin/:path*',
     '/member/:path*',
     '/id-card/:path*',
-    '/api/admin/:path*',
   ],
 };
