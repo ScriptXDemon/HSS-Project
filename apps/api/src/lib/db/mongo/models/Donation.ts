@@ -21,6 +21,20 @@ const DonationSchema = new Schema<DonationDocument>(
     isAnonymous: { type: Boolean, default: false },
     showInDonorList: { type: Boolean, default: true },
     receipt: { type: String },
+    paymentMode: {
+      type: String,
+      enum: ['MANUAL_UPI', 'RAZORPAY'],
+      default: 'MANUAL_UPI',
+    },
+    paymentProofKey: { type: String },
+    paymentProofStatus: {
+      type: String,
+      enum: ['NOT_REQUIRED', 'PENDING_REVIEW', 'VERIFIED', 'REJECTED'],
+      default: 'PENDING_REVIEW',
+    },
+    verifiedBy: { type: String, index: true },
+    verifiedAt: { type: Date },
+    verificationNotes: { type: String },
   },
   { timestamps: true }
 );

@@ -1,4 +1,4 @@
-﻿import { cookies } from 'next/headers';
+import { cookies } from 'next/headers';
 import ContactForm from '@/components/forms/ContactForm';
 import PageHero from '@/components/shared/PageHero';
 import { getLanguageFromCookiesStore, pickLanguage } from '@/lib/i18n';
@@ -36,12 +36,28 @@ const copy = {
     mapHelp: 'जब उपलब्ध हो, संगठन के वास्तविक कार्यालय स्थान से इस एम्बेड को अपडेट करें।',
     mapTitle: 'संगठन का स्थान मानचित्र',
   },
+  mr: {
+    eyebrow: 'संपर्क',
+    title: 'सहाय्य, समन्वय किंवा सार्वजनिक चौकशीसाठी संघटनेशी संपर्क साधा',
+    description:
+      'स्थानिक समन्वय, स्वयंसेवकांचे प्रश्न, कार्यक्रमविषयक माहिती किंवा संघटनात्मक संवादासाठी संपर्क फॉर्म वापरा.',
+    desk: 'संपर्क कक्ष',
+    help: 'आम्ही कशी मदत करू शकतो ते सांगा',
+    cards: [
+      { label: 'ईमेल', value: 'contact@hindusurakshasangh.org' },
+      { label: 'फोन', value: '+91 98765 43210' },
+      { label: 'सेवा क्षेत्र', value: 'भारतभर समन्वित सहाय्य' },
+    ],
+    map: 'स्थान नकाशा',
+    mapHelp: 'उपलब्ध झाल्यावर संघटनेच्या अचूक कार्यालयीन पत्त्यासह हा एम्बेड अपडेट करा.',
+    mapTitle: 'संघटनेचा स्थान नकाशा',
+  },
 } as const;
 
 const mapEmbedUrl = 'https://www.google.com/maps?q=India&output=embed';
 
-export default function ContactPage() {
-  const language = getLanguageFromCookiesStore(cookies());
+export default async function ContactPage() {
+  const language = getLanguageFromCookiesStore(await cookies());
   const text = pickLanguage(language, copy);
 
   return (

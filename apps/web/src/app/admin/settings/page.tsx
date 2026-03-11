@@ -1,4 +1,4 @@
-﻿import { cookies } from 'next/headers';
+import { cookies } from 'next/headers';
 import { getLanguageFromCookiesStore, pickLanguage } from '@/lib/i18n';
 import { getAdminSettingsData } from '@/lib/services/admin-dashboard';
 
@@ -17,10 +17,17 @@ const copy = {
     value: 'मान',
     noData: 'कोई सेटिंग रिकॉर्ड नहीं मिला।',
   },
+  mr: {
+    title: 'सेटिंग्ज आणि कॉन्फिगरेशन',
+    description: 'स्थानिक डेमो वातावरणात उपलब्ध सक्रिय स्टोरेज आणि डेटाबेस सेटिंग्ज.',
+    key: 'सेटिंग',
+    value: 'मूल्य',
+    noData: 'एकही सेटिंग रेकॉर्ड सापडला नाही.',
+  },
 } as const;
 
 export default async function AdminSettingsPage() {
-  const language = getLanguageFromCookiesStore(cookies());
+  const language = getLanguageFromCookiesStore(await cookies());
   const text = pickLanguage(language, copy);
   const settings = await getAdminSettingsData();
 

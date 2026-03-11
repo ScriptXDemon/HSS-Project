@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server';
 import { createUserAccount } from '@/lib/services/users';
+import { assertAllowedOrigin } from '@/lib/security/origin';
 import { buildRateLimitKey, enforceRateLimit, rateLimitProfiles } from '@/lib/security/rate-limit';
 import { registerSchema } from '@/lib/validators';
 
 export async function POST(request: Request) {
   try {
-    enforceRateLimit({
+    assertAllowedOrigin(request);
+    await enforceRateLimit({
       key: buildRateLimitKey(request, 'auth-register'),
       ...rateLimitProfiles.auth,
     });

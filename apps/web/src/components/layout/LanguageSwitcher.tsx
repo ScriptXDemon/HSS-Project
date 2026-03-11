@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useLanguage } from '@/components/providers/LanguageProvider';
 import type { Language } from '@/lib/i18n';
@@ -8,7 +8,12 @@ interface LanguageSwitcherProps {
   inverted?: boolean;
 }
 
-const languages: Language[] = ['en', 'hi'];
+const languages: Language[] = ['en', 'hi', 'mr'];
+const compactLabels: Record<Language, string> = {
+  en: 'EN',
+  hi: 'HI',
+  mr: 'MR',
+};
 
 export default function LanguageSwitcher({
   compact = false,
@@ -44,7 +49,7 @@ export default function LanguageSwitcher({
                   : 'text-brown-dark/70 hover:bg-stone-temple'
             }`}
           >
-            {compact ? item.toUpperCase() : languageLabels[item]}
+            {compact ? compactLabels[item] : languageLabels[item]}
           </button>
         );
       })}

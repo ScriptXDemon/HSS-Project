@@ -39,6 +39,22 @@ const copy = {
     sending: 'भेजा जा रहा है...',
     send: 'संदेश भेजें',
   },
+  mr: {
+    name: 'पूर्ण नाव',
+    email: 'ईमेल पत्ता',
+    phone: 'फोन नंबर',
+    subject: 'विषय',
+    message: 'संदेश',
+    namePlaceholder: 'आपले पूर्ण नाव',
+    emailPlaceholder: 'name@example.com',
+    phonePlaceholder: '9876543210',
+    subjectPlaceholder: 'आम्ही कशी मदत करू?',
+    messagePlaceholder: 'आपल्या चौकशी, कार्यक्रम किंवा स्थानिक उपक्रमासाठी आम्ही कशी मदत करू शकतो ते सांगा.',
+    error: 'आपला संदेश पाठवता आला नाही',
+    success: 'आपला संदेश पाठवला गेला आहे. आमची टीम लवकरच संपर्क करेल.',
+    sending: 'पाठवले जात आहे...',
+    send: 'संदेश पाठवा',
+  },
 } as const;
 
 export default function ContactForm() {

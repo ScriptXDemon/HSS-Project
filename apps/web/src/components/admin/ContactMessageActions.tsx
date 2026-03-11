@@ -19,6 +19,10 @@ const copy = {
     markRead: 'पढ़ा हुआ चिन्हित करें',
     error: 'संदेश को पढ़ा हुआ चिन्हित नहीं किया जा सका।',
   },
+  mr: {
+    markRead: 'वाचलेले चिन्हांकित करा',
+    error: 'संदेश वाचलेला म्हणून चिन्हांकित करता आला नाही.',
+  },
 } as const;
 
 export default function ContactMessageActions({ messageId, disabled }: ContactMessageActionsProps) {

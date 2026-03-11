@@ -1,4 +1,4 @@
-﻿import { cookies } from 'next/headers';
+import { cookies } from 'next/headers';
 import Image from 'next/image';
 import PageHero from '@/components/shared/PageHero';
 import { getLanguageFromCookiesStore, pickLanguage } from '@/lib/i18n';
@@ -27,10 +27,20 @@ const copy = {
     leadershipDescription:
       'ये प्रोफाइल उपलब्ध होने पर CMS सामग्री से ली जाती हैं, अन्यथा अस्थायी सूची दिखाई जाती है।',
   },
+  mr: {
+    eyebrow: 'एचएसएस विषयी',
+    title: 'सेवा, परंपरा आणि नागरी जबाबदारीवर आधारलेली शिस्तबद्ध चळवळ',
+    description:
+      'हिंदू सुरक्षा संघाची कथा, ध्येय आणि दृष्टी जाणून घ्या जी समाजसेवा, सांस्कृतिक नेतृत्व आणि सामाजिक एकात्मतेला दिशा देते.',
+    leadershipEyebrow: 'नेतृत्व',
+    leadershipTitle: 'मिशनमागची टीम',
+    leadershipDescription:
+      'ही प्रोफाइल्स उपलब्ध असल्यास CMS मधून घेतली जातात, अन्यथा तात्पुरती यादी दाखवली जाते.',
+  },
 } as const;
 
 export default async function AboutPage() {
-  const language = getLanguageFromCookiesStore(cookies());
+  const language = getLanguageFromCookiesStore(await cookies());
   const text = pickLanguage(language, copy);
   const content = await getAboutPageContent(language);
   const sections = [content.history, content.mission, content.vision];

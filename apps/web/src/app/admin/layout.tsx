@@ -1,4 +1,4 @@
-﻿import { cookies } from 'next/headers';
+import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import { auth } from '@/lib/auth';
@@ -15,6 +15,11 @@ const copy = {
     role: '{name} ({role}) के रूप में लॉगिन',
     breadcrumb: 'कंट्रोल पैनल',
   },
+  mr: {
+    welcome: 'अॅडमिन प्रवेश',
+    role: '{name} ({role}) म्हणून लॉगिन',
+    breadcrumb: 'नियंत्रण पॅनेल',
+  },
 } as const;
 
 export default async function AdminLayout({
@@ -29,7 +34,7 @@ export default async function AdminLayout({
     redirect('/login?callbackUrl=/admin');
   }
 
-  const language = getLanguageFromCookiesStore(cookies());
+  const language = getLanguageFromCookiesStore(await cookies());
   const text = pickLanguage(language, copy);
   const roleLabel = getRoleLabel(role, language);
   const userName = session.user.name || 'Hari';

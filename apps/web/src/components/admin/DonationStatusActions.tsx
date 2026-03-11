@@ -25,6 +25,13 @@ const copy = {
     proof: 'प्रमाण देखें',
     error: 'दान स्थिति अपडेट नहीं हो सकी।',
   },
+  mr: {
+    verify: 'पडताळलेले चिन्हांकित करा',
+    fail: 'अयशस्वी चिन्हांकित करा',
+    refund: 'परतावा चिन्हांकित करा',
+    proof: 'पुरावा पहा',
+    error: 'देणगीची स्थिती अद्यतनित करता आली नाही.',
+  },
 } as const;
 
 export default function DonationStatusActions({ donationId, proofUrl }: DonationStatusActionsProps) {

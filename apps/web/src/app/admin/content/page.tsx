@@ -1,4 +1,4 @@
-﻿import { cookies } from 'next/headers';
+import { cookies } from 'next/headers';
 import { getLanguageFromCookiesStore, pickLanguage } from '@/lib/i18n';
 import { getAdminContentData } from '@/lib/services/admin-dashboard';
 
@@ -17,10 +17,17 @@ const copy = {
     preview: 'पूर्वावलोकन',
     noData: 'कोई कंटेंट रिकॉर्ड नहीं मिला।',
   },
+  mr: {
+    title: 'कंटेंट ब्लॉक्स',
+    description: 'सार्वजनिक माहितीच्या पानांना चालना देणारे सध्याचे CMS रेकॉर्ड.',
+    key: 'कंटेंट की',
+    preview: 'पूर्वावलोकन',
+    noData: 'एकही कंटेंट रेकॉर्ड सापडला नाही.',
+  },
 } as const;
 
 export default async function AdminContentPage() {
-  const language = getLanguageFromCookiesStore(cookies());
+  const language = getLanguageFromCookiesStore(await cookies());
   const text = pickLanguage(language, copy);
   const content = await getAdminContentData();
 

@@ -9,7 +9,7 @@
 } from '@hss/domain';
 import { serverApiFetch } from '@/lib/api-client';
 
-export async function getAboutPageContent(_language: 'en' | 'hi' = 'en') {
+export async function getAboutPageContent(_language: 'en' | 'hi' | 'mr' = 'en') {
   return serverApiFetch<AboutContentResponse>(`/content/about?lang=${_language}`);
 }
 

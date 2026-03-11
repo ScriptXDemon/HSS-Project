@@ -8,6 +8,7 @@ import { pickLanguage } from '@/lib/i18n';
 const copy = {
   en: { signOut: 'Sign Out' },
   hi: { signOut: 'साइन आउट' },
+  mr: { signOut: 'साइन आऊट' },
 } as const;
 
 export default function AdminSignOutButton() {

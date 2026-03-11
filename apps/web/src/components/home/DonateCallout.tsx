@@ -20,6 +20,13 @@ const copy = {
     primary: 'अभी दान करें',
     secondary: 'दाता सूची देखें',
   },
+  mr: {
+    title: 'आमच्या ध्येयाला पाठिंबा द्या',
+    description:
+      'आपली उदार देणगी कार्यक्रम, समाजसेवा उपक्रम आणि हिंदू संस्कृती व वारसा संरक्षणासाठी मदत करते.',
+    primary: 'आता देणगी द्या',
+    secondary: 'दाता सूची पहा',
+  },
 } as const;
 
 export default function DonateCallout() {

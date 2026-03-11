@@ -25,7 +25,7 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   try {
-    enforceRateLimit({
+    await enforceRateLimit({
       key: buildRateLimitKey(request, 'auth-bootstrap'),
       ...rateLimitProfiles.auth,
     });

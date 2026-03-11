@@ -1,10 +1,11 @@
-import { getActiveEngine, getDb } from '@/lib/db';
+import { getDb } from '@/lib/db';
 import type {
   IContactMessage,
   IDonation,
   IEvent,
   IGalleryAlbum,
   IMember,
+  PaymentProofStatus,
   ISiteContent,
   ISiteSetting,
   IUser,
@@ -58,6 +59,12 @@ export interface CreateAdminGalleryInput {
   description?: string;
   coverImage?: File | null;
   images: File[];
+}
+
+export interface DonationVerificationInput {
+  status: PaymentStatus;
+  verifiedBy?: string;
+  verificationNotes?: string;
 }
 
 function getUploadMode() {
@@ -225,7 +232,7 @@ export async function getAdminSettingsData(): Promise<Array<ISiteSetting | { key
   const settings = await db.siteSetting.findAll({ page: 1, limit: 50 });
 
   return [
-    { key: 'database_engine', value: getActiveEngine() },
+    { key: 'database_engine', value: 'mongo' },
     { key: 'upload_storage', value: getUploadMode() },
     ...settings.data,
   ];
@@ -257,6 +264,7 @@ export async function createAdminEvent(input: CreateAdminEventInput) {
       const uploadedCover = await uploadImageFile(input.coverImage, {
         folder: 'events/images',
         maxSizeBytes: uploadLimits.galleryAsset,
+        visibility: 'public',
       });
       coverUploadKey = uploadedCover.key;
       coverImageUrl = uploadedCover.url;
@@ -266,6 +274,7 @@ export async function createAdminEvent(input: CreateAdminEventInput) {
       const uploadedVideo = await uploadMediaFile(input.video, {
         folder: 'events/videos',
         maxSizeBytes: uploadLimits.eventVideo,
+        visibility: 'public',
       });
       videoUploadKey = uploadedVideo.key;
       videoUrl = uploadedVideo.url;
@@ -314,6 +323,7 @@ export async function createAdminGallery(input: CreateAdminGalleryInput) {
       const uploadedCover = await uploadImageFile(input.coverImage, {
         folder: 'gallery/covers',
         maxSizeBytes: uploadLimits.galleryAsset,
+        visibility: 'public',
       });
       uploadedKeys.push(uploadedCover.key);
       coverImageUrl = uploadedCover.url;
@@ -323,6 +333,7 @@ export async function createAdminGallery(input: CreateAdminGalleryInput) {
       const uploadedImage = await uploadImageFile(image, {
         folder: 'gallery/items',
         maxSizeBytes: uploadLimits.galleryAsset,
+        visibility: 'public',
       });
       uploadedKeys.push(uploadedImage.key);
       uploadedImages.push(uploadedImage.url);
@@ -382,7 +393,22 @@ export async function updateMemberStatus(memberId: string, status: MemberStatus)
   return updatedMember;
 }
 
-export async function updateDonationStatus(donationId: string, status: PaymentStatus) {
+function mapPaymentProofStatus(status: PaymentStatus): PaymentProofStatus {
+  if (status === 'SUCCESS') {
+    return 'VERIFIED';
+  }
+
+  if (status === 'FAILED') {
+    return 'REJECTED';
+  }
+
+  return 'PENDING_REVIEW';
+}
+
+export async function updateDonationStatus(
+  donationId: string,
+  input: DonationVerificationInput
+) {
   const db = await getDb();
   const donation = await db.donation.findById(donationId);
 
@@ -391,8 +417,12 @@ export async function updateDonationStatus(donationId: string, status: PaymentSt
   }
 
   const updatedDonation = await db.donation.update(donationId, {
-    status,
-    showInDonorList: status === 'SUCCESS' && !donation.isAnonymous,
+    status: input.status,
+    paymentProofStatus: mapPaymentProofStatus(input.status),
+    verifiedBy: input.verifiedBy,
+    verifiedAt: input.status === 'PENDING' ? undefined : new Date(),
+    verificationNotes: normalizeOptionalString(input.verificationNotes),
+    showInDonorList: input.status === 'SUCCESS' && !donation.isAnonymous,
   });
 
   if (!updatedDonation) {

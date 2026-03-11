@@ -120,6 +120,12 @@ export async function createDonationOrderService(input: DonationOrderInput) {
     razorpayOrderId: undefined,
     razorpayPaymentId: undefined,
     receipt: undefined,
+    paymentMode: 'RAZORPAY',
+    paymentProofStatus: 'NOT_REQUIRED',
+    paymentProofKey: undefined,
+    verifiedBy: undefined,
+    verifiedAt: undefined,
+    verificationNotes: undefined,
   });
 
   try {
@@ -174,6 +180,7 @@ export async function submitManualDonationService(input: ManualDonationInput) {
   const uploadedProof = await uploadImageFile(input.screenshot, {
     folder: 'donations/proofs',
     maxSizeBytes: uploadLimits.donationProof,
+    visibility: 'private',
   });
 
   try {
@@ -190,14 +197,19 @@ export async function submitManualDonationService(input: ManualDonationInput) {
       userId: undefined,
       razorpayOrderId: undefined,
       razorpayPaymentId: undefined,
-      // Temporary manual-payment proof URL until the admin workflow gets a dedicated field.
-      receipt: uploadedProof.url,
+      receipt: undefined,
+      paymentMode: 'MANUAL_UPI',
+      paymentProofKey: uploadedProof.key,
+      paymentProofStatus: 'PENDING_REVIEW',
+      verifiedBy: undefined,
+      verifiedAt: undefined,
+      verificationNotes: undefined,
     });
 
     return {
       donationId: donation.id,
       status: donation.status,
-      proofUrl: donation.receipt,
+      proofUrl: uploadedProof.url,
       message:
         'Donation details submitted successfully. The payment proof is pending admin verification.',
     };
@@ -248,6 +260,8 @@ export async function handleRazorpayWebhook(payload: string, signature: string) 
     razorpayPaymentId: payment?.id || donation.razorpayPaymentId,
     donorEmail: donation.donorEmail || payment?.email || undefined,
     donorPhone: donation.donorPhone || payment?.contact || undefined,
+    paymentMode: donation.paymentMode || 'RAZORPAY',
+    paymentProofStatus: nextStatus === 'SUCCESS' ? 'NOT_REQUIRED' : donation.paymentProofStatus,
   });
 
   return {

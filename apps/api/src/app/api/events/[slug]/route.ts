@@ -1,4 +1,4 @@
-﻿import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { createErrorResponse } from '@/lib/api';
 import { AppError } from '@/lib/errors';
 import { getPublishedEventBySlug } from '@/lib/services/public-content';
@@ -7,10 +7,11 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(
   _request: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const event = await getPublishedEventBySlug(params.slug);
+    const { slug } = await params;
+    const event = await getPublishedEventBySlug(slug);
     if (!event) {
       throw new AppError('Event not found', 404);
     }

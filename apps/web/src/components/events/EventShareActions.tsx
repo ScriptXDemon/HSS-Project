@@ -22,6 +22,12 @@ const copy = {
     copied: 'लिंक कॉपी हो गया',
     whatsapp: 'व्हाट्सऐप',
   },
+  mr: {
+    share: 'शेअर करा',
+    copy: 'दुवा कॉपी करा',
+    copied: 'दुवा कॉपी झाला',
+    whatsapp: 'व्हॉट्सअॅप',
+  },
 } as const;
 
 export default function EventShareActions({ title, shareUrl }: EventShareActionsProps) {

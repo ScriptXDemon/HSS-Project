@@ -1,4 +1,4 @@
-﻿import { cookies } from 'next/headers';
+import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 import GalleryLightbox from '@/components/gallery/GalleryLightbox';
 import EmptyState from '@/components/shared/EmptyState';
@@ -26,6 +26,14 @@ const copy = {
     emptyTitle: 'इस एल्बम में अभी कोई प्रकाशित मीडिया नहीं है',
     emptyDescription: 'एल्बम से मीडिया जुड़ने पर छवियाँ और वीडियो यहाँ दिखाई देंगे।',
   },
+  mr: {
+    eyebrow: 'गॅलरी अल्बम',
+    description: 'या अल्बममधील सर्व प्रकाशित मीडिया सामग्री पाहा.',
+    items: '{count} आयटम',
+    published: '{date} रोजी प्रकाशित',
+    emptyTitle: 'या अल्बममध्ये अजून कोणताही प्रकाशित मीडिया नाही',
+    emptyDescription: 'अल्बमला मीडिया जोडल्यावर चित्रे आणि व्हिडिओ येथे दिसतील.',
+  },
 } as const;
 
 export default async function GalleryAlbumPage({
@@ -33,7 +41,7 @@ export default async function GalleryAlbumPage({
 }: {
   params: { id: string };
 }) {
-  const language = getLanguageFromCookiesStore(cookies());
+  const language = getLanguageFromCookiesStore(await cookies());
   const text = pickLanguage(language, copy);
   const locale = getIntlLocale(language);
   const album = await getGalleryAlbumById(params.id);

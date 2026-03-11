@@ -19,11 +19,18 @@ const copy = {
     error: 'Unable to deactivate user.',
   },
   hi: {
-    remove: 'Deactivate',
-    removing: 'Deactivating...',
-    confirm: 'Deactivate this user account? The account will be blocked from signing in and any linked member profile will be suspended.',
-    success: 'User deactivated successfully.',
-    error: 'Unable to deactivate user.',
+    remove: 'निष्क्रिय करें',
+    removing: 'निष्क्रिय किया जा रहा है...',
+    confirm: 'क्या इस उपयोगकर्ता खाते को निष्क्रिय करना है? खाते का साइन-इन बंद कर दिया जाएगा और जुड़ी सदस्य प्रोफ़ाइल निलंबित कर दी जाएगी।',
+    success: 'उपयोगकर्ता सफलतापूर्वक निष्क्रिय किया गया।',
+    error: 'उपयोगकर्ता को निष्क्रिय नहीं किया जा सका।',
+  },
+  mr: {
+    remove: 'निष्क्रिय करा',
+    removing: 'निष्क्रिय करत आहे...',
+    confirm: 'हे वापरकर्ता खाते निष्क्रिय करायचे आहे का? या खात्याला साइन-इन करता येणार नाही आणि जोडलेली सदस्य प्रोफाइल निलंबित केली जाईल.',
+    success: 'वापरकर्ता यशस्वीपणे निष्क्रिय केला.',
+    error: 'वापरकर्त्याला निष्क्रिय करता आले नाही.',
   },
 } as const;
 

@@ -9,7 +9,5 @@ services:
     envVars:
       - key: NODE_VERSION
         value: 20
-      - key: DEFAULT_DB_ENGINE
-        value: mongo
       - key: AUTH_TRUST_HOST
         value: true

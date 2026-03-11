@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createErrorResponse } from '@/lib/api';
 import { AppError } from '@/lib/errors';
+import { assertAllowedOrigin } from '@/lib/security/origin';
 import { buildRateLimitKey, enforceRateLimit, rateLimitProfiles } from '@/lib/security/rate-limit';
 import { submitMemberApplication } from '@/lib/services/member-application';
 
@@ -11,7 +12,8 @@ function getRequiredString(formData: FormData, key: string) {
 
 export async function POST(request: Request) {
   try {
-    enforceRateLimit({
+    assertAllowedOrigin(request);
+    await enforceRateLimit({
       key: buildRateLimitKey(request, 'member-apply'),
       ...rateLimitProfiles.auth,
     });

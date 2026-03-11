@@ -1,10 +1,11 @@
-// Database-agnostic model types. Both Mongoose and Prisma implementations
-// map their results to these interfaces before returning.
+// Mongo-backed model types returned by the repository layer.
 
 export type Role = 'SUPER_ADMIN' | 'ADMIN' | 'MEMBER';
 export type MemberStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'SUSPENDED';
 export type MediaType = 'IMAGE' | 'VIDEO';
 export type PaymentStatus = 'PENDING' | 'SUCCESS' | 'FAILED' | 'REFUNDED';
+export type PaymentMode = 'MANUAL_UPI' | 'RAZORPAY';
+export type PaymentProofStatus = 'NOT_REQUIRED' | 'PENDING_REVIEW' | 'VERIFIED' | 'REJECTED';
 
 export interface BaseEntity {
   id: string;
@@ -91,6 +92,12 @@ export interface IDonation extends BaseEntity {
   isAnonymous: boolean;
   showInDonorList: boolean;
   receipt?: string;
+  paymentMode?: PaymentMode;
+  paymentProofKey?: string;
+  paymentProofStatus?: PaymentProofStatus;
+  verifiedBy?: string;
+  verifiedAt?: Date;
+  verificationNotes?: string;
 }
 
 export interface IContactMessage extends BaseEntity {

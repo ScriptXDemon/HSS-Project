@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createErrorResponse } from '@/lib/api';
 import { requireAdminSession } from '@/lib/server-auth';
+import { assertAllowedOrigin } from '@/lib/security/origin';
 import { createAdminEvent, getAdminEventsData } from '@/lib/services/admin-dashboard';
 
 export const runtime = 'nodejs';
@@ -29,6 +30,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     await requireAdminSession();
+    assertAllowedOrigin(request);
     const formData = await request.formData();
     const event = await createAdminEvent({
       title: getTextField(formData, 'title'),

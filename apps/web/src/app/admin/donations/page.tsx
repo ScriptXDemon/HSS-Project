@@ -1,4 +1,4 @@
-﻿import { cookies } from 'next/headers';
+import { cookies } from 'next/headers';
 import DonationStatusActions from '@/components/admin/DonationStatusActions';
 import { formatDisplayDate, formatIndianCurrency } from '@/lib/format';
 import { getIntlLocale, getLanguageFromCookiesStore, getStatusLabel, pickLanguage } from '@/lib/i18n';
@@ -27,10 +27,21 @@ const copy = {
     actions: 'कार्य',
     noData: 'कोई दान रिकॉर्ड नहीं मिला।',
   },
+  mr: {
+    title: 'देणगी पडताळणी',
+    description: 'अपलोड केलेले पेमेंट स्क्रीनशॉट तपासा आणि पडताळणीनंतर प्रत्येक देणगीची स्थिती अद्यतनित करा.',
+    donor: 'दाता',
+    amount: 'रक्कम',
+    status: 'स्थिती',
+    submitted: 'सबमिट दिनांक',
+    proof: 'पेमेंट पुरावा',
+    actions: 'क्रिया',
+    noData: 'कोणतीही देणगी नोंद सापडली नाही.',
+  },
 } as const;
 
 export default async function AdminDonationsPage() {
-  const language = getLanguageFromCookiesStore(cookies());
+  const language = getLanguageFromCookiesStore(await cookies());
   const locale = getIntlLocale(language);
   const text = pickLanguage(language, copy);
   const donations = await getAdminDonationsData();
@@ -67,7 +78,14 @@ export default async function AdminDonationsPage() {
                   </td>
                   <td className="px-3 py-4 text-brown-dark/70">{formatDisplayDate(donation.createdAt, undefined, locale)}</td>
                   <td className="px-3 py-4">
-                    <DonationStatusActions donationId={donation.id} proofUrl={donation.receipt} />
+                    <DonationStatusActions
+                      donationId={donation.id}
+                      proofUrl={
+                        donation.paymentProofKey
+                          ? `/api/admin/files?key=${encodeURIComponent(donation.paymentProofKey)}`
+                          : undefined
+                      }
+                    />
                   </td>
                 </tr>
               ))}

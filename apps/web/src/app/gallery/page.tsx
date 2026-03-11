@@ -1,4 +1,4 @@
-﻿import { cookies } from 'next/headers';
+import { cookies } from 'next/headers';
 import Image from 'next/image';
 import Link from 'next/link';
 import EmptyState from '@/components/shared/EmptyState';
@@ -33,6 +33,17 @@ const copy = {
     emptyTitle: 'कोई गैलरी एल्बम प्रकाशित नहीं है',
     emptyDescription: 'एडमिन पैनल से फोटो या वीडियो अपलोड होने पर एल्बम यहाँ दिखाई देंगे।',
   },
+  mr: {
+    eyebrow: 'गॅलरी',
+    title: 'कार्यक्रम, मोहीमा आणि समाज सहभागातील क्षण',
+    description:
+      'तळागाळातील संघटनात्मक कार्यातील फोटो आणि व्हिडिओ हायलाइट्स असलेले प्रकाशित अल्बम पाहा.',
+    placeholder: 'अल्बम',
+    items: '{count} आयटम',
+    published: '{date} रोजी प्रकाशित',
+    emptyTitle: 'कोणतेही गॅलरी अल्बम प्रकाशित नाहीत',
+    emptyDescription: 'अॅडमिन पॅनेलमधून फोटो किंवा व्हिडिओ अपलोड झाल्यावर अल्बम येथे दिसतील.',
+  },
 } as const;
 
 function resolvePage(value?: string | string[]) {
@@ -46,7 +57,7 @@ export default async function GalleryPage({
 }: {
   searchParams?: { page?: string | string[] };
 }) {
-  const language = getLanguageFromCookiesStore(cookies());
+  const language = getLanguageFromCookiesStore(await cookies());
   const text = pickLanguage(language, copy);
   const locale = getIntlLocale(language);
   const page = resolvePage(searchParams?.page);

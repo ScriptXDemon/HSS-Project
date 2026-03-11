@@ -1,4 +1,4 @@
-﻿import { cookies } from 'next/headers';
+import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { formatDisplayDate, formatDisplayDateTime, formatIndianCurrency } from '@/lib/format';
 import {
@@ -54,10 +54,32 @@ const copy = {
     openDonations: 'दान खोलें',
     openMessages: 'संदेश खोलें',
   },
+  mr: {
+    title: 'कमांड सेंटर आढावा',
+    description: 'सदस्यता, देणग्या, संपर्क संदेश आणि अलीकडील हालचाल एकाच ठिकाणाहून पाहा.',
+    totalMembers: 'एकूण सदस्य',
+    pendingMembers: 'प्रलंबित पडताळणी',
+    approvedMembers: 'मंजूर सदस्य',
+    totalDonations: 'पडताळलेल्या देणग्या',
+    pendingDonations: 'प्रलंबित देणगी पुरावे',
+    unreadMessages: 'न वाचलेले संदेश',
+    upcomingEvents: 'आगामी कार्यक्रम',
+    latestMembers: 'नवीन सदस्य अर्ज',
+    latestDonations: 'नवीन देणगी नोंदी',
+    latestMessages: 'नवीन संपर्क संदेश',
+    latestEvents: 'आगामी प्रकाशित कार्यक्रम',
+    noMembers: 'अजून सदस्य अर्ज नाहीत.',
+    noDonations: 'अजून देणगी नोंदी नाहीत.',
+    noMessages: 'अजून संपर्क संदेश नाहीत.',
+    noEvents: 'अजून आगामी कार्यक्रम नाहीत.',
+    openMembers: 'सदस्य पहा',
+    openDonations: 'देणग्या पहा',
+    openMessages: 'संदेश पहा',
+  },
 } as const;
 
 export default async function AdminDashboardPage() {
-  const language = getLanguageFromCookiesStore(cookies());
+  const language = getLanguageFromCookiesStore(await cookies());
   const locale = getIntlLocale(language);
   const text = pickLanguage(language, copy);
   const data = await getAdminDashboardData();

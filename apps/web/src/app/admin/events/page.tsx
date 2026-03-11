@@ -19,21 +19,33 @@ const copy = {
     noData: 'No events found.',
   },
   hi: {
-    title: '????????? ????',
-    description: '?????? ??? ?????? ???????? ?? ??????? ????????? ????????',
-    event: '?????????',
-    date: '????',
-    venue: '?????',
-    published: '????????',
-    frontend: '????????',
-    view: '?????',
-    video: '?????? ?????',
-    noData: '??? ????????? ???? ?????',
+    title: 'कार्यक्रम सूची',
+    description: 'सिस्टम में उपलब्ध प्रकाशित और ड्राफ्ट कार्यक्रम रिकॉर्ड।',
+    event: 'कार्यक्रम',
+    date: 'तारीख',
+    venue: 'स्थान',
+    published: 'प्रकाशित',
+    frontend: 'फ्रंटएंड',
+    view: 'देखें',
+    video: 'वीडियो अपलोड किया गया',
+    noData: 'कोई कार्यक्रम नहीं मिला।',
+  },
+  mr: {
+    title: 'कार्यक्रम सूची',
+    description: 'सिस्टममध्ये उपलब्ध प्रकाशित आणि मसुदा कार्यक्रम नोंदी.',
+    event: 'कार्यक्रम',
+    date: 'तारीख',
+    venue: 'स्थान',
+    published: 'प्रकाशित',
+    frontend: 'फ्रंटएंड',
+    view: 'पहा',
+    video: 'व्हिडिओ अपलोड केलेला आहे',
+    noData: 'एकही कार्यक्रम सापडला नाही.',
   },
 } as const;
 
 export default async function AdminEventsPage() {
-  const language = getLanguageFromCookiesStore(cookies());
+  const language = getLanguageFromCookiesStore(await cookies());
   const locale = getIntlLocale(language);
   const text = pickLanguage(language, copy);
   const events = await getAdminEventsData();

@@ -17,19 +17,29 @@ const copy = {
     noData: 'No gallery albums found.',
   },
   hi: {
-    title: '????? ?????',
-    description: '???? ?? ?????? ????? ??????? ?? ???? ?????? ???????',
-    album: '?????',
-    count: '?????? ??????',
-    created: '???????',
-    frontend: '????????',
-    view: '?????',
-    noData: '??? ????? ????? ???? ?????',
+    title: 'गैलरी एल्बम',
+    description: 'साइट के लिए उपलब्ध एल्बम रिकॉर्ड और उनकी मीडिया संख्या।',
+    album: 'एल्बम',
+    count: 'मीडिया संख्या',
+    created: 'बनाया गया',
+    frontend: 'फ्रंटएंड',
+    view: 'देखें',
+    noData: 'कोई गैलरी एल्बम नहीं मिला।',
+  },
+  mr: {
+    title: 'गॅलरी अल्बम',
+    description: 'साइटसाठी उपलब्ध अल्बम नोंदी आणि त्यातील मीडिया संख्या.',
+    album: 'अल्बम',
+    count: 'मीडिया संख्या',
+    created: 'तयार केले',
+    frontend: 'फ्रंटएंड',
+    view: 'पहा',
+    noData: 'एकही गॅलरी अल्बम सापडला नाही.',
   },
 } as const;
 
 export default async function AdminGalleryPage() {
-  const language = getLanguageFromCookiesStore(cookies());
+  const language = getLanguageFromCookiesStore(await cookies());
   const locale = getIntlLocale(language);
   const text = pickLanguage(language, copy);
   const albums = await getAdminGalleryData();

@@ -1,7 +1,5 @@
-import { Prisma } from '@prisma/client';
-import { getActiveEngine, getDb } from '@/lib/db';
+import { getDb } from '@/lib/db';
 import type { IMember } from '@/lib/db/types';
-import { prisma } from '@/lib/db/prisma/client';
 import { encryptSensitiveValue } from '@/lib/encryption';
 import { AppError } from '@/lib/errors';
 import { deleteUploadedFile, uploadImageFile, uploadLimits } from '@/lib/upload';
@@ -58,14 +56,6 @@ function buildMemberRecord(input: MemberApplicationInput, userId: string, photoU
   };
 }
 
-function mapPrismaError(error: unknown) {
-  if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
-    throw new AppError('An account with this email or phone number already exists', 409);
-  }
-
-  throw error;
-}
-
 export async function submitMemberApplication(
   input: MemberApplicationInput
 ): Promise<MemberApplicationResult> {
@@ -90,6 +80,7 @@ export async function submitMemberApplication(
     const uploaded = await uploadImageFile(input.photo, {
       folder: 'members/photos',
       maxSizeBytes: uploadLimits.memberPhoto,
+      visibility: 'private',
     });
     uploadedPhotoKey = uploaded.key;
     uploadedPhotoUrl = uploaded.url;
@@ -106,33 +97,6 @@ export async function submitMemberApplication(
     });
 
     const memberData = buildMemberRecord(parsed.data, '__REPLACE_USER_ID__', uploadedPhotoUrl);
-
-    if (getActiveEngine() === 'postgres') {
-      try {
-        const created = await prisma.$transaction(async (tx) => {
-          const user = await tx.user.create({
-            data: userData,
-          });
-
-          const member = await tx.member.create({
-            data: {
-              ...memberData,
-              userId: user.id,
-            },
-          });
-
-          return { user, member };
-        });
-
-        return {
-          userId: created.user.id,
-          memberId: created.member.id,
-          status: created.member.status,
-        };
-      } catch (error) {
-        mapPrismaError(error);
-      }
-    }
 
     const db = await getDb();
     const user = await db.user.create(userData);
@@ -160,9 +124,6 @@ export async function submitMemberApplication(
     if (error instanceof AppError) {
       throw error;
     }
-
-    mapPrismaError(error);
+    throw error;
   }
-
-  throw new AppError('Unable to submit membership application', 500);
 }

@@ -45,6 +45,25 @@ const copy = {
     importantLinks: 'महत्वपूर्ण लिंक',
     donors: 'दाता सूची',
   },
+  mr: {
+    brand: 'हिंदू सुरक्षा संघ',
+    tagline: 'सेवा आणि संघटन',
+    description:
+      'राज्यभर हिंदू संस्कृती, मूल्ये आणि समाजकल्याणाच्या संरक्षण व संवर्धनासाठी समर्पित.',
+    quickLinks: 'त्वरित दुवे',
+    contact: 'संपर्क',
+    office: 'राज्य कार्यालय, भारत',
+    rights: 'सर्व हक्क राखीव.',
+    salutation: 'जय श्री राम',
+    about: 'आमच्याविषयी',
+    events: 'कार्यक्रम',
+    gallery: 'गॅलरी',
+    donate: 'दान',
+    join: 'सदस्य व्हा',
+    contactLink: 'संपर्क',
+    importantLinks: 'महत्त्वाचे दुवे',
+    donors: 'दाता सूची',
+  },
 } as const;
 
 export default function Footer() {

@@ -25,6 +25,15 @@ const copy = {
     primary: 'सदस्य बनें',
     secondary: 'अभी दान करें',
   },
+  mr: {
+    badge: 'जय श्री राम',
+    title: 'हिंदू सुरक्षा संघ',
+    subtitle: 'सेवा, सुरक्षा, संघटन',
+    description:
+      'राज्यभर हिंदू संस्कृती, मूल्ये आणि समाजकल्याणाच्या संरक्षण व संवर्धनासाठी समर्पित.',
+    primary: 'सदस्य बना',
+    secondary: 'आता देणगी द्या',
+  },
 } as const;
 
 export default function HeroSection() {

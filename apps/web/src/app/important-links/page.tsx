@@ -1,4 +1,4 @@
-﻿import { cookies } from 'next/headers';
+import { cookies } from 'next/headers';
 import PageHero from '@/components/shared/PageHero';
 import EmptyState from '@/components/shared/EmptyState';
 import { getLanguageFromCookiesStore, pickLanguage } from '@/lib/i18n';
@@ -25,10 +25,19 @@ const copy = {
     emptyTitle: 'अभी कोई लिंक प्रकाशित नहीं है',
     emptyDescription: 'सामग्री टीम द्वारा प्रकाशित होने पर महत्वपूर्ण लिंक यहाँ दिखाई देंगे।',
   },
+  mr: {
+    eyebrow: 'संसाधने',
+    title: 'सदस्य, स्वयंसेवक आणि जनतेसाठी महत्त्वाचे दुवे',
+    description:
+      'अधिकृत साधने, सहयोगी संदर्भ आणि सार्वजनिक माहितीसाठी निवडक दुव्यांची सूची.',
+    visit: 'दुवा उघडा',
+    emptyTitle: 'अजून कोणतेही दुवे प्रकाशित नाहीत',
+    emptyDescription: 'सामग्री टीमने प्रकाशित केल्यानंतर महत्त्वाचे दुवे येथे दिसतील.',
+  },
 } as const;
 
 export default async function ImportantLinksPage() {
-  const language = getLanguageFromCookiesStore(cookies());
+  const language = getLanguageFromCookiesStore(await cookies());
   const text = pickLanguage(language, copy);
   const links = await getImportantLinks();
 

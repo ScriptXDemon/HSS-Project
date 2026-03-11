@@ -1,4 +1,4 @@
-﻿import { cookies } from 'next/headers';
+import { cookies } from 'next/headers';
 import PageHero from '@/components/shared/PageHero';
 import EmptyState from '@/components/shared/EmptyState';
 import PaginationControls from '@/components/shared/PaginationControls';
@@ -30,6 +30,17 @@ const copy = {
     emptyTitle: 'अभी कोई सार्वजनिक दाता नहीं है',
     emptyDescription: 'गैर-गोपनीय और सफल दान रिकॉर्ड होने पर यहाँ दिखाई देंगे।',
   },
+  mr: {
+    eyebrow: 'सार्वजनिक कृतज्ञता',
+    title: 'ध्येय मजबूत करणाऱ्या योगदानकर्त्यांचा सन्मान',
+    description:
+      'ही सार्वजनिक सूची कार्यक्रम, जनजागृती आणि सेवा उपक्रमांना पाठिंबा देणाऱ्या उघड यशस्वी देणग्यांची नोंद दाखवते.',
+    contributor: 'योगदानकर्ता',
+    contributedOn: '{date} रोजी योगदान',
+    emptyTitle: 'अजून सार्वजनिक दाते नाहीत',
+    emptyDescription:
+      'गैर-गोपनीय आणि यशस्वी देणग्या नोंदवल्यानंतर त्या येथे दिसतील.',
+  },
 } as const;
 
 function resolvePage(value?: string | string[]) {
@@ -43,7 +54,7 @@ export default async function DonorsPage({
 }: {
   searchParams?: { page?: string | string[] };
 }) {
-  const language = getLanguageFromCookiesStore(cookies());
+  const language = getLanguageFromCookiesStore(await cookies());
   const locale = getIntlLocale(language);
   const text = pickLanguage(language, copy);
   const page = resolvePage(searchParams?.page);

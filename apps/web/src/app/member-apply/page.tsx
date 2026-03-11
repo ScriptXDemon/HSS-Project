@@ -1,4 +1,4 @@
-﻿import { cookies } from 'next/headers';
+import { cookies } from 'next/headers';
 import MemberApplicationForm from '@/components/forms/MemberApplicationForm';
 import PageHero from '@/components/shared/PageHero';
 import { getLanguageFromCookiesStore, pickLanguage } from '@/lib/i18n';
@@ -42,10 +42,29 @@ const copy = {
       'अनुमोदन के बाद आईडी कार्ड और सदस्य सेवाओं के लिए पात्र बनें।',
     ],
   },
+  mr: {
+    eyebrow: 'संघटनेशी जोडा',
+    title: 'आपले खाते तयार करा आणि सदस्यत्व अर्ज जमा करा',
+    description:
+      'हा एकच फॉर्म आपले लॉगिन खाते तयार करतो आणि सदस्यत्व अर्ज मंजुरीसाठी जतन करतो. अर्ज केल्यानंतर सदस्यत्व प्रलंबित असले तरी खाते लगेच वापरता येते.',
+    next: 'पुढे काय होईल',
+    workflow: 'सदस्यत्व पुनरावलोकन प्रक्रिया',
+    steps: [
+      'आपले सदस्य खाते तयार करा आणि आवश्यक माहिती जमा करा.',
+      'अॅडमिन टीम अर्जाची तपासणी करून दिलेली माहिती पडताळते.',
+      'मंजूर सदस्यांना पुढील डॅशबोर्ड सुविधा आणि ओळखपत्र सेवांचा प्रवेश मिळतो.',
+    ],
+    benefits: 'सदस्य लाभ',
+    benefitItems: [
+      'स्थानिक उपक्रम आणि आगामी कार्यक्रमांची थेट माहिती मिळवा.',
+      'आपल्या सुरक्षित खात्याचा आणि भविष्यातील सदस्य डॅशबोर्डचा वापर करा.',
+      'मंजुरीनंतर ओळखपत्र निर्मिती आणि सदस्य सेवांसाठी पात्र व्हा.',
+    ],
+  },
 } as const;
 
-export default function MemberApplyPage() {
-  const language = getLanguageFromCookiesStore(cookies());
+export default async function MemberApplyPage() {
+  const language = getLanguageFromCookiesStore(await cookies());
   const text = pickLanguage(language, copy);
 
   return (

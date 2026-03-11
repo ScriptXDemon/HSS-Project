@@ -1,15 +1,18 @@
 import { NextResponse } from 'next/server';
 import { createErrorResponse } from '@/lib/api';
 import { requireAdminSession } from '@/lib/server-auth';
+import { assertAllowedOrigin } from '@/lib/security/origin';
 import { markContactMessageRead } from '@/lib/services/admin-dashboard';
 
 export async function PATCH(
-  _request: Request,
-  { params }: { params: { id: string } }
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     await requireAdminSession();
-    await markContactMessageRead(params.id);
+    assertAllowedOrigin(request);
+    await markContactMessageRead(id);
     return NextResponse.json({ success: true });
   } catch (error) {
     return createErrorResponse(error);

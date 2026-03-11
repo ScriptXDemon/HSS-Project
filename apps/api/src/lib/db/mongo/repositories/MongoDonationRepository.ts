@@ -74,7 +74,12 @@ export class MongoDonationRepository implements IDonationRepository {
   async findPublicDonors(pagination: PaginationParams = { page: 1, limit: 20 }): Promise<PaginatedResult<IDonation>> {
     const M = await this.model();
     const skip = paginationToSkip(pagination);
-    const filter = { status: 'SUCCESS', isAnonymous: false, showInDonorList: true };
+    const filter = {
+      status: 'SUCCESS',
+      isAnonymous: false,
+      showInDonorList: true,
+      paymentProofStatus: { $in: ['NOT_REQUIRED', 'VERIFIED'] },
+    };
     const [docs, total] = await Promise.all([
       M.find(filter).sort({ createdAt: -1 }).skip(skip).limit(pagination.limit),
       M.countDocuments(filter),

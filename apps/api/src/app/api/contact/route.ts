@@ -2,12 +2,14 @@ import { NextResponse } from 'next/server';
 import { createErrorResponse } from '@/lib/api';
 import { getDb } from '@/lib/db';
 import { AppError } from '@/lib/errors';
+import { assertAllowedOrigin } from '@/lib/security/origin';
 import { buildRateLimitKey, enforceRateLimit, rateLimitProfiles } from '@/lib/security/rate-limit';
 import { contactSchema } from '@/lib/validators';
 
 export async function POST(request: Request) {
   try {
-    enforceRateLimit({
+    assertAllowedOrigin(request);
+    await enforceRateLimit({
       key: buildRateLimitKey(request, 'contact-submit'),
       ...rateLimitProfiles.generalWrite,
     });

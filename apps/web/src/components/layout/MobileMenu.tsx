@@ -27,6 +27,12 @@ const copy = {
     closeMenu: 'मेनू बंद करें',
     login: 'लॉगिन',
   },
+  mr: {
+    brand: 'हिंदू सुरक्षा संघ',
+    tagline: 'सेवा आणि संघटन',
+    closeMenu: 'मेनू बंद करा',
+    login: 'लॉगिन',
+  },
 } as const;
 
 export default function MobileMenu({ isOpen, onClose, links, pathname }: MobileMenuProps) {

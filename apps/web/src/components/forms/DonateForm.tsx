@@ -72,6 +72,33 @@ const copy = {
     emailPlaceholder: 'name@example.com',
     phonePlaceholder: '9876543210',
   },
+  mr: {
+    step1Label: 'पायरी 1',
+    stepsLabel: 'पायऱ्या',
+    warning:
+      'QR प्रतिमा अजून placeholder आहे. अंतिम डेमोपूर्वी `NEXT_PUBLIC_DONATION_QR_IMAGE_URL` सेट करा किंवा `public/donation-qr.jpeg` मध्ये खरी प्रतिमा ठेवा.',
+    step1: 'QR कोड स्कॅन करा आणि कोणत्याही UPI अॅपद्वारे पेमेंट पूर्ण करा.',
+    step2: 'पेमेंट यशस्वी झाल्यावर स्क्रीनशॉट घ्या.',
+    step3: 'खाली आपली माहिती भरा आणि तोच स्क्रीनशॉट अपलोड करा.',
+    step4: 'अॅडमिन पुरावा तपासून दानाची नोंद निश्चित करेल.',
+    preset: 'प्रीसेट',
+    amount: 'दान रक्कम',
+    donorName: 'दात्याचे नाव',
+    donorEmail: 'ईमेल पत्ता',
+    donorPhone: 'फोन नंबर',
+    private: 'सत्यापनानंतर सार्वजनिक दाता पृष्ठावर माझे योगदान खाजगी ठेवा',
+    screenshot: 'पेमेंट स्क्रीनशॉट',
+    screenshotPlaceholder: 'JPG, PNG, किंवा WebP स्क्रीनशॉट अपलोड करा (कमाल 5MB)',
+    choose: 'निवडा',
+    missingScreenshot: 'QR पेमेंट पूर्ण केल्यानंतर कृपया पेमेंट स्क्रीनशॉट अपलोड करा.',
+    submit: 'दानाचा पुरावा जमा करा',
+    submitting: 'सत्यापनासाठी जमा होत आहे...',
+    error: 'दानाचा पुरावा जमा करता आला नाही',
+    success: 'दानाचा पुरावा यशस्वीरित्या जमा झाला.',
+    namePlaceholder: 'आपले पूर्ण नाव',
+    emailPlaceholder: 'name@example.com',
+    phonePlaceholder: '9876543210',
+  },
 } as const;
 
 export default function DonateForm({

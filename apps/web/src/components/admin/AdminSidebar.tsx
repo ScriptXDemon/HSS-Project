@@ -34,6 +34,19 @@ const copy = {
     gallery: 'गैलरी',
     settings: 'सेटिंग्स',
   },
+  mr: {
+    title: 'अॅडमिन कन्सोल',
+    subtitle: 'संचालन आणि पुनरावलोकन',
+    dashboard: 'डॅशबोर्ड',
+    members: 'सदस्य',
+    donations: 'देणग्या',
+    contact: 'संपर्क संदेश',
+    users: 'वापरकर्ते',
+    content: 'सामग्री',
+    events: 'कार्यक्रम',
+    gallery: 'गॅलरी',
+    settings: 'सेटिंग्ज',
+  },
 } as const;
 
 interface AdminSidebarProps {

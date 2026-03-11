@@ -36,6 +36,19 @@ const copy = {
     login: 'लॉगिन',
     openMenu: 'मेनू खोलें',
   },
+  mr: {
+    brand: 'हिंदू सुरक्षा संघ',
+    tagline: 'सेवा आणि संघटन',
+    home: 'मुख्यपृष्ठ',
+    about: 'आमच्याविषयी',
+    events: 'कार्यक्रम',
+    gallery: 'गॅलरी',
+    donate: 'दान',
+    join: 'सदस्य व्हा',
+    contact: 'संपर्क',
+    login: 'लॉगिन',
+    openMenu: 'मेनू उघडा',
+  },
 } as const;
 
 export default function Navbar() {

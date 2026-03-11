@@ -22,6 +22,12 @@ const copy = {
     suspend: 'निलंबित करें',
     error: 'सदस्य स्थिति अपडेट नहीं हो सकी।',
   },
+  mr: {
+    approve: 'मंजूर करा',
+    reject: 'नामंजूर करा',
+    suspend: 'निलंबित करा',
+    error: 'सदस्याची स्थिती अद्यतनित करता आली नाही.',
+  },
 } as const;
 
 export default function MemberStatusActions({ memberId }: MemberStatusActionsProps) {

@@ -1,4 +1,4 @@
-﻿import type { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import { Poppins, Yatra_One, Tiro_Devanagari_Hindi } from 'next/font/google';
 import Navbar from '@/components/layout/Navbar';
@@ -38,12 +38,12 @@ export const metadata: Metadata = {
   keywords: ['Hindu Suraksha Sangh', 'Hindu organization', 'membership', 'events', 'donate'],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const language = getLanguageFromCookiesStore(cookies());
+  const language = getLanguageFromCookiesStore(await cookies());
 
   return (
     <html lang={language}>

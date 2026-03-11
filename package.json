@@ -12,7 +12,8 @@
     "build": "npm run build -w packages/domain && npm run build -w apps/api && npm run build -w apps/web",
     "build:web": "npm run build -w apps/web",
     "build:api": "npm run build -w apps/api",
-    "test": "npm run test -w apps/api",
-    "typecheck": "npm run typecheck -w apps/api && npm run typecheck -w apps/web"
+    "test": "npm run test -w apps/api && npm run test -w apps/web",
+    "typecheck": "npm run typecheck -w apps/api && npm run typecheck -w apps/web",
+    "smoke:deploy": "node scripts/smoke-deploy.mjs"
   }
 }

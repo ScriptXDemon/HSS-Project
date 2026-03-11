@@ -1,4 +1,4 @@
-﻿import { cookies } from 'next/headers';
+import { cookies } from 'next/headers';
 import Link from 'next/link';
 import DonateForm from '@/components/forms/DonateForm';
 import PageHero from '@/components/shared/PageHero';
@@ -41,10 +41,27 @@ const copy = {
       'गैर-गोपनीय दान केवल एडमिन द्वारा भुगतान प्रमाण सत्यापित होने के बाद ही सार्वजनिक दाता पृष्ठ पर दिखना चाहिए। यदि आप गोपनीयता चाहते हैं तो फॉर्म जमा करने से पहले विकल्प चुनें।',
     viewDonors: 'सार्वजनिक दाता देखें',
   },
+  mr: {
+    eyebrow: 'मिशनला समर्थन द्या',
+    title: 'सेवा, संपर्क आणि समाजकार्याला बळ द्या',
+    description:
+      'आपले योगदान स्थानिक कार्यक्रम, स्वयंसेवक समन्वय, जनजागृती उपक्रम आणि सामाजिक कामासाठी थेट उपयोगी पडते.',
+    impactEyebrow: 'प्रभाव मार्गदर्शिका',
+    impactTitle: 'आपले योगदान कुठे लगेच मदत करते',
+    impactPoints: [
+      { title: 'स्वयंसेवक सक्रियता', amount: 500 },
+      { title: 'समुदाय कार्यक्रम सहाय्य', amount: 1000 },
+      { title: 'संपर्क साहित्य आणि लॉजिस्टिक्स', amount: 5000 },
+    ],
+    transparencyTitle: 'पारदर्शकता नोंद',
+    transparencyDescription:
+      'गोपनीय नसलेली देणगी फक्त अॅडमिनने अपलोड केलेला पेमेंट पुरावा तपासल्यानंतरच सार्वजनिक दाता पृष्ठावर दिसेल. गोपनीयता हवी असल्यास फॉर्म जमा करण्यापूर्वी पर्याय निवडा.',
+    viewDonors: 'सार्वजनिक दाते पहा',
+  },
 } as const;
 
-export default function DonatePage() {
-  const language = getLanguageFromCookiesStore(cookies());
+export default async function DonatePage() {
+  const language = getLanguageFromCookiesStore(await cookies());
   const locale = getIntlLocale(language);
   const text = pickLanguage(language, copy);
   const qrConfig = getDonationQrConfig();

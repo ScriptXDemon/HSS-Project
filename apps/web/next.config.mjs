@@ -20,6 +20,7 @@ if (mediaBaseUrl) {
 const nextConfig = {
   transpilePackages: ['@hss/domain'],
   images: {
+    unoptimized: true,
     remotePatterns,
   },
 };

@@ -29,6 +29,15 @@ const copy = {
     nextItem: 'अगला आइटम',
     itemCounter: 'आइटम {current} / {total}',
   },
+  mr: {
+    imageAlt: 'गॅलरी प्रतिमा',
+    playVideo: 'व्हिडिओ चालवा',
+    itemLabel: 'गॅलरी आयटम {index}',
+    closePreview: 'पूर्वावलोकन बंद करा',
+    previousItem: 'मागील आयटम',
+    nextItem: 'पुढील आयटम',
+    itemCounter: 'आयटम {current} / {total}',
+  },
 } as const;
 
 function renderMedia(item: GalleryItemDTO, priority = false, imageAlt: string) {

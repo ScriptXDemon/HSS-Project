@@ -1,4 +1,4 @@
-﻿import { cookies } from 'next/headers';
+import { cookies } from 'next/headers';
 import ContactMessageActions from '@/components/admin/ContactMessageActions';
 import { formatDisplayDateTime } from '@/lib/format';
 import { getIntlLocale, getLanguageFromCookiesStore, getStatusLabel, pickLanguage } from '@/lib/i18n';
@@ -27,10 +27,21 @@ const copy = {
     actions: 'कार्य',
     noData: 'कोई संपर्क संदेश नहीं मिला।',
   },
+  mr: {
+    title: 'संपर्क इनबॉक्स',
+    description: 'सार्वजनिक संदेशांचे निरीक्षण करा आणि हाताळणीनंतर त्यांना वाचलेले चिन्हांकित करा.',
+    sender: 'प्रेषक',
+    subject: 'विषय',
+    message: 'संदेश',
+    status: 'स्थिती',
+    received: 'प्राप्त',
+    actions: 'क्रिया',
+    noData: 'कोणतेही संपर्क संदेश सापडले नाहीत.',
+  },
 } as const;
 
 export default async function AdminContactMessagesPage() {
-  const language = getLanguageFromCookiesStore(cookies());
+  const language = getLanguageFromCookiesStore(await cookies());
   const locale = getIntlLocale(language);
   const text = pickLanguage(language, copy);
   const messages = await getAdminContactMessagesData();

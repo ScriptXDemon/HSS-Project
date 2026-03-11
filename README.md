@@ -6,6 +6,8 @@ This repository is split for deployment:
 - `apps/api`: Next.js API/Auth backend for Render
 - `packages/domain`: shared DTOs, validators, and contracts
 
+The repo is Mongo-only. Legacy SQL runtime support has been removed from the active deployment path.
+
 ## Local development
 
 1. Install dependencies from the repo root:
@@ -27,11 +29,14 @@ copy apps\api\.env.example apps\api\.env.local
 - `apps/api/.env.local`
   - `MONGODB_URI`
   - `NEXTAUTH_SECRET`
+  - `APP_ORIGIN`
+  - `UPSTASH_REDIS_REST_URL`
+  - `UPSTASH_REDIS_REST_TOKEN`
   - `ENCRYPTION_KEY`
   - `ADMIN_BOOTSTRAP_TOKEN`
 - `apps/web/.env.local`
   - `NEXT_PUBLIC_SITE_URL`
-  - `BACKEND_INTERNAL_URL`
+  - `BACKEND_INTERNAL_URL` optional
 
 4. Run the backend:
 
@@ -77,14 +82,23 @@ The bootstrap route only works while no admin or super-admin exists.
 - build command: `npm run build:web`
 - publish directory: `apps/web/.next`
 - proxy `/api/*` to the Render backend using `netlify.toml`
+- in production, leave `BACKEND_INTERNAL_URL` empty unless you have a trusted private backend origin for SSR
 
 ### Render
 
 - create a web service from the repo root
 - use `render.yaml`
-- set `NEXTAUTH_URL` to the Render API origin
+- set `NEXTAUTH_URL` to the public Netlify origin because browser auth is proxied through Netlify
 - use MongoDB Atlas, not local MongoDB
 - use Cloudflare R2 for uploads and set `DISABLE_LOCAL_UPLOAD_FALLBACK=true`
+- use Upstash Redis for shared rate limiting and account lockout
+- set `APP_ORIGIN` to the public frontend origin and populate `ALLOWED_APP_ORIGINS` if multiple trusted origins are allowed
+
+## Security notes
+
+- sensitive uploads such as member photos and donation proofs are private and served through authenticated backend routes
+- admin bootstrap should be used exactly once, then `ADMIN_BOOTSTRAP_TOKEN` should be rotated or removed
+- production readiness intentionally fails when MongoDB or Redis security dependencies are missing
 
 ## Verification
 

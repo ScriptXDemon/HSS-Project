@@ -1,4 +1,4 @@
-﻿import { cookies } from 'next/headers';
+import { cookies } from 'next/headers';
 import Image from 'next/image';
 import Link from 'next/link';
 import PageHero from '@/components/shared/PageHero';
@@ -41,6 +41,21 @@ const copy = {
     emptyDescription: 'एडमिन पैनल से कार्यक्रम बनने पर वे यहाँ दिखाई देंगे।',
     placeholder: 'कार्यक्रम',
   },
+  mr: {
+    eyebrow: 'कार्यक्रम',
+    title: 'आगामी मेळावे पाहा आणि मागील कार्यक्रमांकडे पुन्हा नजर टाका',
+    description:
+      'कॅलेंडरनुसार प्रकाशित कार्यक्रम, स्थानिक सभा आणि संघटनात्मक उपक्रम पाहा.',
+    upcomingTab: 'आगामी कार्यक्रम',
+    pastTab: 'मागील संग्रह',
+    upcomingLabel: 'आगामी',
+    pastLabel: 'पूर्ण',
+    viewDetails: 'तपशील पहा',
+    emptyUpcoming: 'कोणतेही आगामी कार्यक्रम प्रकाशित नाहीत',
+    emptyPast: 'कोणतेही जुने कार्यक्रम संग्रहित नाहीत',
+    emptyDescription: 'अॅडमिन पॅनेलमधून कार्यक्रम तयार झाल्यावर ते येथे दिसतील.',
+    placeholder: 'कार्यक्रम',
+  },
 } as const;
 
 function resolveValue(value?: string | string[]) {
@@ -57,7 +72,7 @@ export default async function EventsPage({
 }: {
   searchParams?: { scope?: string | string[]; page?: string | string[] };
 }) {
-  const language = getLanguageFromCookiesStore(cookies());
+  const language = getLanguageFromCookiesStore(await cookies());
   const text = pickLanguage(language, copy);
   const locale = getIntlLocale(language);
   const scope = resolveValue(searchParams?.scope) === 'past' ? 'past' : 'upcoming';

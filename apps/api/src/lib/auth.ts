@@ -27,7 +27,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return null;
         }
 
-        assertLoginAllowed(identifier);
+        await assertLoginAllowed(identifier);
 
         const bcrypt = (await import('bcryptjs')).default;
         const { getDb } = await import('@/lib/db');
@@ -35,17 +35,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const db = await getDb();
         const user = await db.user.findByEmail(identifier);
         if (!user || user.isActive === false) {
-          recordFailedLogin(identifier);
+          await recordFailedLogin(identifier);
           return null;
         }
 
         const isValid = await bcrypt.compare(password, user.passwordHash);
         if (!isValid) {
-          recordFailedLogin(identifier);
+          await recordFailedLogin(identifier);
           return null;
         }
 
-        clearFailedLogins(identifier);
+        await clearFailedLogins(identifier);
 
         return {
           id: user.id,

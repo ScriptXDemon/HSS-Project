@@ -1,4 +1,4 @@
-﻿import { cookies } from 'next/headers';
+import { cookies } from 'next/headers';
 import MemberStatusActions from '@/components/admin/MemberStatusActions';
 import { formatDisplayDate } from '@/lib/format';
 import {
@@ -34,10 +34,22 @@ const copy = {
     actions: 'कार्य',
     noData: 'कोई सदस्य रिकॉर्ड नहीं मिला।',
   },
+  mr: {
+    title: 'सदस्य व्यवस्थापन',
+    description: 'सदस्य अर्ज पाहा, स्थिती बदला आणि सदस्य आयडी तयार करा.',
+    member: 'सदस्य',
+    phone: 'फोन',
+    location: 'स्थान',
+    applied: 'अर्ज दिनांक',
+    idCard: 'ओळखपत्र',
+    status: 'स्थिती',
+    actions: 'क्रिया',
+    noData: 'कोणतीही सदस्य नोंद सापडली नाही.',
+  },
 } as const;
 
 export default async function AdminMembersPage() {
-  const language = getLanguageFromCookiesStore(cookies());
+  const language = getLanguageFromCookiesStore(await cookies());
   const locale = getIntlLocale(language);
   const text = pickLanguage(language, copy);
   const members = await getAdminMembersData();

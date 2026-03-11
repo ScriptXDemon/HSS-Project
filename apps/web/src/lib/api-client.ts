@@ -1,4 +1,4 @@
-﻿import { headers } from 'next/headers';
+import { headers } from 'next/headers';
 import type { ApiErrorResponse } from '@hss/domain';
 
 function trimTrailingSlash(value: string) {
@@ -24,7 +24,7 @@ function getServerApiBase() {
 }
 
 export async function serverApiFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const cookieHeader = headers().get('cookie');
+  const cookieHeader = (await headers()).get('cookie');
   const response = await fetch(`${getServerApiBase()}${path}`, {
     ...init,
     cache: 'no-store',

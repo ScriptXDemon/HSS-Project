@@ -1,4 +1,4 @@
-﻿import { cookies } from 'next/headers';
+import { cookies } from 'next/headers';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import EventShareActions from '@/components/events/EventShareActions';
@@ -22,15 +22,26 @@ const copy = {
     shareDescription: 'Invite others by sharing the event link directly or posting it to your networks.',
   },
   hi: {
-    eyebrow: 'Event Detail',
-    description: 'Full programme details, venue information, and easy sharing links for the published event.',
-    placeholder: 'Event',
-    overview: 'Event Overview',
-    when: 'When',
-    venue: 'Venue',
-    media: 'Event Media',
-    shareTitle: 'Share This Event',
-    shareDescription: 'Invite others by sharing the event link directly or posting it to your networks.',
+    eyebrow: 'कार्यक्रम विवरण',
+    description: 'प्रकाशित कार्यक्रम के पूरे विवरण, स्थल जानकारी और आसान शेयरिंग लिंक देखें।',
+    placeholder: 'कार्यक्रम',
+    overview: 'कार्यक्रम अवलोकन',
+    when: 'समय',
+    venue: 'स्थान',
+    media: 'कार्यक्रम मीडिया',
+    shareTitle: 'यह कार्यक्रम साझा करें',
+    shareDescription: 'लिंक साझा करके या अपने नेटवर्क पर पोस्ट करके दूसरों को आमंत्रित करें।',
+  },
+  mr: {
+    eyebrow: 'कार्यक्रम तपशील',
+    description: 'प्रकाशित कार्यक्रमाचे संपूर्ण तपशील, स्थळ माहिती आणि सोपे शेअरिंग दुवे पाहा.',
+    placeholder: 'कार्यक्रम',
+    overview: 'कार्यक्रम आढावा',
+    when: 'केव्हा',
+    venue: 'स्थळ',
+    media: 'कार्यक्रम मीडिया',
+    shareTitle: 'हा कार्यक्रम शेअर करा',
+    shareDescription: 'कार्यक्रमाचा दुवा थेट शेअर करून किंवा आपल्या नेटवर्कवर पोस्ट करून इतरांना आमंत्रित करा.',
   },
 } as const;
 
@@ -39,7 +50,7 @@ export default async function EventDetailPage({
 }: {
   params: { slug: string };
 }) {
-  const language = getLanguageFromCookiesStore(cookies());
+  const language = getLanguageFromCookiesStore(await cookies());
   const text = pickLanguage(language, copy);
   const locale = getIntlLocale(language);
   const event = await getPublishedEventBySlug(params.slug);

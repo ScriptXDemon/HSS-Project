@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
-
-const MONGODB_URI = process.env.MONGODB_URI!;
+import { AppError } from '@/lib/errors';
 
 interface MongoCache {
   conn: typeof mongoose | null;
@@ -15,11 +14,16 @@ if (!globalForMongo.__mongoose) {
 
 export async function connectMongo(): Promise<typeof mongoose> {
   const cached = globalForMongo.__mongoose;
+  const mongoUri = process.env.MONGODB_URI;
+
+  if (!mongoUri) {
+    throw new AppError('MONGODB_URI is not configured', 503);
+  }
 
   if (cached.conn) return cached.conn;
 
   if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGODB_URI, {
+    cached.promise = mongoose.connect(mongoUri, {
       bufferCommands: false,
     });
   }

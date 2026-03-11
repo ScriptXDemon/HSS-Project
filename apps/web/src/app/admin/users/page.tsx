@@ -21,25 +21,39 @@ const copy = {
     no: 'No',
   },
   hi: {
-    title: '?????????? ????',
-    description: '?????? ??? ??????? ???????????? ?? ???? ???????? ?? ??????? ?????',
-    name: '???',
-    email: '????',
-    role: '??????',
-    approved: '???????',
-    created: '???????',
-    actions: '????????',
-    current: '??????? ????',
-    noData: '??? ?????????? ???? ?????',
-    yes: '???',
-    no: '????',
+    title: 'उपयोगकर्ता खाते',
+    description: 'वर्तमान उपयोगकर्ता सूची की समीक्षा करें और सिस्टम में भूमिका आवंटन देखें।',
+    name: 'नाम',
+    email: 'ईमेल',
+    role: 'भूमिका',
+    approved: 'स्वीकृत',
+    created: 'बनाया गया',
+    actions: 'कार्रवाइयाँ',
+    current: 'वर्तमान सत्र',
+    noData: 'कोई उपयोगकर्ता नहीं मिला।',
+    yes: 'हाँ',
+    no: 'नहीं',
+  },
+  mr: {
+    title: 'वापरकर्ता खाती',
+    description: 'सध्याची वापरकर्ता यादी पाहा आणि सिस्टममधील भूमिका वाटप तपासा.',
+    name: 'नाव',
+    email: 'ईमेल',
+    role: 'भूमिका',
+    approved: 'मंजूर',
+    created: 'तयार केले',
+    actions: 'क्रिया',
+    current: 'सध्याचे सत्र',
+    noData: 'एकही वापरकर्ता सापडला नाही.',
+    yes: 'हो',
+    no: 'नाही',
   },
 } as const;
 
 export default async function AdminUsersPage() {
   const session = await auth();
   const currentUserId = session?.user?.id;
-  const language = getLanguageFromCookiesStore(cookies());
+  const language = getLanguageFromCookiesStore(await cookies());
   const locale = getIntlLocale(language);
   const text = pickLanguage(language, copy);
   const users = await getAdminUsersData();

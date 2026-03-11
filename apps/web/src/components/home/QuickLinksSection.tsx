@@ -28,6 +28,17 @@ const copy = {
       { href: '/contact', label: 'संपर्क करें', icon: 'सहायता', color: 'bg-brown-dark' },
     ],
   },
+  mr: {
+    title: 'त्वरित प्रवेश',
+    items: [
+      { href: '/member-apply', label: 'सदस्य व्हा', icon: 'जॉईन', color: 'bg-saffron' },
+      { href: '/events', label: 'आगामी कार्यक्रम', icon: 'कार्यक्रम', color: 'bg-sacred-red' },
+      { href: '/gallery', label: 'फोटो गॅलरी', icon: 'गॅलरी', color: 'bg-gold-temple' },
+      { href: '/id-card', label: 'ओळखपत्र डाउनलोड', icon: 'आयडी', color: 'bg-maroon-deep' },
+      { href: '/important-links', label: 'महत्त्वाचे दुवे', icon: 'दुवे', color: 'bg-saffron-deep' },
+      { href: '/contact', label: 'संपर्क करा', icon: 'मदत', color: 'bg-brown-dark' },
+    ],
+  },
 } as const;
 
 export default function QuickLinksSection() {

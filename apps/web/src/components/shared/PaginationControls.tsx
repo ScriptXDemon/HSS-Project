@@ -23,6 +23,11 @@ const copy = {
     next: 'अगला',
     summary: 'पृष्ठ {page} / {total}',
   },
+  mr: {
+    previous: 'मागील',
+    next: 'पुढील',
+    summary: 'पान {page} / {total}',
+  },
 } as const;
 
 function buildHref(

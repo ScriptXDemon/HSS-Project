@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { Suspense, useMemo, useState } from 'react';
 import Link from 'next/link';
@@ -37,6 +37,21 @@ const copy = {
     joinPrompt: 'क्या आपका खाता नहीं है?',
     joinLink: 'सदस्य बनें',
     loading: 'लोड हो रहा है...',
+  },
+  mr: {
+    welcome: 'पुन्हा स्वागत आहे',
+    subtitle: 'आपल्या खात्यात लॉगिन करा',
+    identifier: 'ईमेल',
+    identifierPlaceholder: 'your@email.com',
+    password: 'पासवर्ड',
+    passwordPlaceholder: 'आपला पासवर्ड टाका',
+    invalid: 'अवैध माहिती',
+    error: 'एक त्रुटी आली. कृपया पुन्हा प्रयत्न करा.',
+    submit: 'लॉगिन करा',
+    submitting: 'लॉगिन होत आहे...',
+    joinPrompt: 'आपले खाते नाही का?',
+    joinLink: 'सदस्य व्हा',
+    loading: 'लोड होत आहे...',
   },
 } as const;
 
