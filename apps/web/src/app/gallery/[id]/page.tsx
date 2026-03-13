@@ -39,12 +39,13 @@ const copy = {
 export default async function GalleryAlbumPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
   const language = getLanguageFromCookiesStore(await cookies());
   const text = pickLanguage(language, copy);
   const locale = getIntlLocale(language);
-  const album = await getGalleryAlbumById(params.id);
+  const album = await getGalleryAlbumById(id);
 
   if (!album) {
     notFound();

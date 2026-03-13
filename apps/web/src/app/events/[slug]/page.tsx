@@ -48,12 +48,13 @@ const copy = {
 export default async function EventDetailPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
+  const { slug } = await params;
   const language = getLanguageFromCookiesStore(await cookies());
   const text = pickLanguage(language, copy);
   const locale = getIntlLocale(language);
-  const event = await getPublishedEventBySlug(params.slug);
+  const event = await getPublishedEventBySlug(slug);
 
   if (!event) {
     notFound();
