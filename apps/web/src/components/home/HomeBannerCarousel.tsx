@@ -1,7 +1,6 @@
-﻿'use client';
+'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import type { BannerDTO } from '@hss/domain';
 import { useLanguage } from '@/components/providers/LanguageProvider';
@@ -13,28 +12,19 @@ interface HomeBannerCarouselProps {
 
 const copy = {
   en: {
-    eyebrow: 'Jai Shri Ram',
     next: 'Next banner',
     previous: 'Previous banner',
     fallbackTitle: 'Hindu Shuraksha Seva Sangh',
-    fallbackSubtitle: 'Seva, organisation, and dharmic public service.',
-    fallbackCta: 'Join Us',
   },
   hi: {
-    eyebrow: 'जय श्री राम',
     next: 'अगला बैनर',
     previous: 'पिछला बैनर',
     fallbackTitle: 'हिंदू सुरक्षा सेवा संघ',
-    fallbackSubtitle: 'सेवा, संगठन और धर्म आधारित लोककार्य का संकल्प।',
-    fallbackCta: 'हमसे जुड़ें',
   },
   mr: {
-    eyebrow: 'जय श्री राम',
     next: 'पुढील बॅनर',
     previous: 'मागील बॅनर',
     fallbackTitle: 'हिंदू सुरक्षा सेवा संघ',
-    fallbackSubtitle: 'सेवा, संघटन आणि धर्माधिष्ठित लोककार्यासाठी बांधिलकी.',
-    fallbackCta: 'जोडा',
   },
 } as const;
 
@@ -73,16 +63,19 @@ export default function HomeBannerCarousel({ banners }: HomeBannerCarouselProps)
   }
 
   return (
-    <section className="page-shell pt-6">
+    <section className="page-shell pt-10 sm:pt-12">
       <div className="page-content">
-        <div className="relative overflow-hidden rounded-[2rem] border border-saffron/20 bg-brown-dark shadow-2xl shadow-saffron/10">
-          <div className="relative aspect-[16/8] min-h-[320px] w-full sm:aspect-[16/7] lg:aspect-[16/6]">
+        <div className="overflow-hidden rounded-[2.25rem] border border-stone-temple/70 bg-white/95 p-3 shadow-2xl shadow-saffron/10 sm:p-4">
+          <div className="relative min-h-[320px] w-full overflow-hidden rounded-[1.8rem] border border-stone-temple/40 bg-gradient-to-br from-cream via-stone-temple/25 to-gold-temple/10 sm:min-h-[400px] lg:min-h-[500px] xl:min-h-[560px]">
             {safeBanners.map((banner, index) => {
               const active = index === activeIndex;
+
               return (
                 <div
                   key={banner.id}
-                  className={`absolute inset-0 transition-opacity duration-700 ${active ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
+                  className={`absolute inset-0 transition-opacity duration-700 ${
+                    active ? 'opacity-100' : 'pointer-events-none opacity-0'
+                  }`}
                 >
                   <Image
                     src={banner.imageUrl}
@@ -90,49 +83,35 @@ export default function HomeBannerCarousel({ banners }: HomeBannerCarouselProps)
                     fill
                     priority={index === 0}
                     sizes="100vw"
-                    className="object-cover"
+                    className="object-contain"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-r from-brown-dark/85 via-brown-dark/45 to-brown-dark/10" />
                 </div>
               );
             })}
+          </div>
 
-            <div className="relative z-10 flex h-full flex-col justify-end p-6 sm:p-8 lg:p-12">
-              <span className="eyebrow text-white/85">{text.eyebrow}</span>
-              <h1 className="mt-4 max-w-3xl font-heading text-4xl leading-tight text-white sm:text-5xl lg:text-6xl">
-                {safeBanners[activeIndex]?.title || text.fallbackTitle}
-              </h1>
-              <p className="mt-4 max-w-2xl text-base leading-7 text-white/85 sm:text-lg">
-                {safeBanners[activeIndex]?.subtitle || text.fallbackSubtitle}
-              </p>
-              <div className="mt-8 flex flex-wrap items-center gap-4">
-                <Link
-                  href={safeBanners[activeIndex]?.ctaHref || '/member-apply'}
-                  className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-saffron transition hover:bg-cream"
-                >
-                  {safeBanners[activeIndex]?.ctaLabel || text.fallbackCta}
-                </Link>
-                <div className="flex items-center gap-2">
-                  {safeBanners.map((banner, index) => (
-                    <button
-                      key={banner.id}
-                      type="button"
-                      onClick={() => goTo(index)}
-                      className={`h-2.5 rounded-full transition ${index === activeIndex ? 'w-8 bg-white' : 'w-2.5 bg-white/45'}`}
-                      aria-label={`${index + 1}`}
-                    />
-                  ))}
-                </div>
+          {safeBanners.length > 1 ? (
+            <div className="flex flex-col gap-4 border-t border-stone-temple/40 bg-white/90 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+              <div className="flex items-center justify-center gap-2 sm:justify-start">
+                {safeBanners.map((banner, index) => (
+                  <button
+                    key={banner.id}
+                    type="button"
+                    onClick={() => goTo(index)}
+                    className={`h-2.5 rounded-full transition ${
+                      index === activeIndex ? 'w-10 bg-saffron' : 'w-2.5 bg-stone-temple/70'
+                    }`}
+                    aria-label={`${index + 1}`}
+                  />
+                ))}
               </div>
-            </div>
 
-            {safeBanners.length > 1 ? (
-              <>
+              <div className="flex items-center justify-center gap-3 sm:justify-end">
                 <button
                   type="button"
                   aria-label={text.previous}
                   onClick={goPrevious}
-                  className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/25 bg-white/10 p-3 text-white backdrop-blur transition hover:bg-white/20"
+                  className="inline-flex items-center justify-center rounded-full border border-stone-temple bg-white p-3 text-brown-dark transition hover:border-saffron hover:text-saffron"
                 >
                   <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path d="M15 18L9 12L15 6" strokeWidth="1.8" strokeLinecap="round" />
@@ -142,15 +121,15 @@ export default function HomeBannerCarousel({ banners }: HomeBannerCarouselProps)
                   type="button"
                   aria-label={text.next}
                   onClick={goNext}
-                  className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/25 bg-white/10 p-3 text-white backdrop-blur transition hover:bg-white/20"
+                  className="inline-flex items-center justify-center rounded-full border border-stone-temple bg-white p-3 text-brown-dark transition hover:border-saffron hover:text-saffron"
                 >
                   <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path d="M9 18L15 12L9 6" strokeWidth="1.8" strokeLinecap="round" />
                   </svg>
                 </button>
-              </>
-            ) : null}
-          </div>
+              </div>
+            </div>
+          ) : null}
         </div>
       </div>
     </section>

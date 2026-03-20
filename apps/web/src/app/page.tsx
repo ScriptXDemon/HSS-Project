@@ -23,7 +23,6 @@ export default async function HomePage() {
       <FeaturedPeopleSection
         eyebrow={aboutContent.content.leadershipEyebrow}
         title={aboutContent.content.leadershipTitle}
-        description={aboutContent.content.leadershipDescription}
         people={homeContent.featuredPeople}
       />
       <QuickLinksSection />

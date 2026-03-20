@@ -17,8 +17,6 @@ interface DonateFormProps {
   qrNote: string;
   qrConfigured: boolean;
   selectedCause?: DonationCause;
-  selectedCauseLabel?: string;
-  selectedCauseDescription?: string;
 }
 
 const copy = {
@@ -117,8 +115,6 @@ export default function DonateForm({
   qrNote,
   qrConfigured,
   selectedCause,
-  selectedCauseLabel,
-  selectedCauseDescription,
 }: DonateFormProps) {
   const [isPending, startTransition] = useTransition();
   const [amount, setAmount] = useState(500);
@@ -181,6 +177,8 @@ export default function DonateForm({
 
   return (
     <form onSubmit={handleSubmit} className="surface-panel p-6 sm:p-8">
+      {selectedCause ? <input type="hidden" name="cause" value={selectedCause} /> : null}
+
       <section className="rounded-3xl border border-stone-temple bg-stone-temple/35 p-5">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
           <div className="relative mx-auto h-52 w-52 overflow-hidden rounded-3xl border border-stone-temple bg-white p-3 shadow-sm sm:mx-0">
@@ -204,13 +202,6 @@ export default function DonateForm({
           </div>
         </div>
       </section>
-
-      <div className="mt-6 rounded-3xl border border-saffron/20 bg-saffron/5 px-5 py-5">
-        <p className="eyebrow">{text.selectedCause}</p>
-        <h3 className="mt-3 text-xl font-semibold text-brown-dark">{selectedCauseLabel || text.noCause}</h3>
-        {selectedCauseDescription ? <p className="mt-2 text-sm leading-7 text-brown-dark/75">{selectedCauseDescription}</p> : null}
-        {selectedCause ? <input type="hidden" name="cause" value={selectedCause} /> : null}
-      </div>
 
       <div className="mt-6 rounded-3xl border border-saffron/20 bg-saffron/5 px-5 py-5">
         <p className="eyebrow">{text.stepsLabel}</p>

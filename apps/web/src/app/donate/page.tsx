@@ -139,52 +139,57 @@ export default async function DonatePage({
     <>
       <PageHero eyebrow={text.eyebrow} title={text.title} description={text.description} />
 
-      <div className="page-content grid gap-8 pb-16 lg:grid-cols-[1.15fr_0.85fr]">
-        <DonateForm
-          qrImageUrl={qrConfig.imageUrl}
-          qrTitle={qrConfig.title}
-          qrNote={qrConfig.note}
-          qrConfigured={qrConfig.isConfigured}
-          selectedCause={selectedCause}
-          selectedCauseLabel={selectedCauseDetails?.title}
-          selectedCauseDescription={selectedCauseDetails?.description}
-        />
+      <div className="page-content pb-16">
+        {selectedCauseDetails ? (
+          <section className="surface-panel mb-8 px-6 py-6">
+            <span className="eyebrow">{text.eyebrow}</span>
+            <h2 className="mt-4 text-2xl font-semibold text-brown-dark sm:text-3xl">
+              {selectedCauseDetails.title}
+            </h2>
+            <p className="mt-3 max-w-3xl text-sm leading-7 text-brown-dark/75 sm:text-base">
+              {selectedCauseDetails.description}
+            </p>
+          </section>
+        ) : null}
 
-        <div className="space-y-6">
-          {selectedCauseDetails ? (
+        <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+          <DonateForm
+            qrImageUrl={qrConfig.imageUrl}
+            qrTitle={qrConfig.title}
+            qrNote={qrConfig.note}
+            qrConfigured={qrConfig.isConfigured}
+            selectedCause={selectedCause}
+          />
+
+          <div className="space-y-6">
             <section className="surface-panel px-6 py-6">
-              <span className="eyebrow">{selectedCauseDetails.title}</span>
-              <p className="mt-4 text-sm leading-7 text-brown-dark/75">{selectedCauseDetails.description}</p>
-            </section>
-          ) : null}
-
-          <section className="surface-panel px-6 py-6">
-            <span className="eyebrow">{text.impactEyebrow}</span>
-            <h2 className="section-title mt-4">{text.impactTitle}</h2>
-            <div className="mt-6 space-y-4">
-              {text.impactPoints.map((item) => (
-                <div
-                  key={item.title}
-                  className="rounded-2xl border border-stone-temple bg-stone-temple/35 px-4 py-4"
-                >
-                  <div className="flex items-center justify-between gap-4">
-                    <p className="font-semibold text-brown-dark">{item.title}</p>
-                    <span className="text-sm font-semibold text-saffron">
-                      {formatIndianCurrency(item.amount, locale)}
-                    </span>
+              <span className="eyebrow">{text.impactEyebrow}</span>
+              <h2 className="section-title mt-4">{text.impactTitle}</h2>
+              <div className="mt-6 space-y-4">
+                {text.impactPoints.map((item) => (
+                  <div
+                    key={item.title}
+                    className="rounded-2xl border border-stone-temple bg-stone-temple/35 px-4 py-4"
+                  >
+                    <div className="flex items-center justify-between gap-4">
+                      <p className="font-semibold text-brown-dark">{item.title}</p>
+                      <span className="text-sm font-semibold text-saffron">
+                        {formatIndianCurrency(item.amount, locale)}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </section>
+                ))}
+              </div>
+            </section>
 
-          <section className="surface-panel px-6 py-6">
-            <h2 className="text-2xl font-semibold text-brown-dark">{text.transparencyTitle}</h2>
-            <p className="mt-4 text-sm leading-7 text-brown-dark/75">{text.transparencyDescription}</p>
-            <Link href="/donors" className="mt-5 inline-flex text-sm font-semibold text-saffron">
-              {text.viewDonors}
-            </Link>
-          </section>
+            <section className="surface-panel px-6 py-6">
+              <h2 className="text-2xl font-semibold text-brown-dark">{text.transparencyTitle}</h2>
+              <p className="mt-4 text-sm leading-7 text-brown-dark/75">{text.transparencyDescription}</p>
+              <Link href="/donors" className="mt-5 inline-flex text-sm font-semibold text-saffron">
+                {text.viewDonors}
+              </Link>
+            </section>
+          </div>
         </div>
       </div>
     </>

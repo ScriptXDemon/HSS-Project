@@ -1,6 +1,6 @@
-﻿'use client';
+'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import SiteLogo from '@/components/shared/SiteLogo';
@@ -52,10 +52,8 @@ const copy = {
 } as const;
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
-  const isHome = pathname === '/';
   const { language } = useLanguage();
   const text = useMemo(() => pickLanguage(language, copy), [language]);
 
@@ -72,35 +70,21 @@ export default function Navbar() {
     [text]
   );
 
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const bgClass = scrolled || !isHome ? 'bg-white shadow-md' : 'bg-transparent';
-  const textClass = scrolled || !isHome ? 'text-brown-dark' : 'text-white';
-
   return (
     <>
-      <nav className={`fixed left-0 right-0 top-0 z-50 transition-all duration-300 ${bgClass}`}>
+      <nav className="fixed left-0 right-0 top-0 z-50 border-b border-stone-temple/50 bg-white/95 shadow-sm shadow-saffron/5 backdrop-blur">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between lg:h-20">
             <Link href="/" className="flex items-center space-x-3">
-              <SiteLogo
-                size={isHome && !scrolled ? 54 : 48}
-                priority
-                framed={isHome && !scrolled}
-                className="transition-all duration-300"
-              />
-              <div className={`hidden sm:block ${textClass}`}>
+              <SiteLogo size={48} priority framed className="transition-all duration-300" />
+              <div className="hidden text-brown-dark sm:block">
                 <p className="font-heading text-lg leading-tight lg:text-xl">{text.brand}</p>
                 <p className="text-xs opacity-75">{text.tagline}</p>
               </div>
             </Link>
 
             <div className="hidden items-center space-x-1 lg:flex">
-              <LanguageSwitcher inverted={isHome && !scrolled} />
+              <LanguageSwitcher />
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
@@ -108,7 +92,7 @@ export default function Navbar() {
                   className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                     pathname === link.href
                       ? 'font-bold text-saffron'
-                      : `${textClass} hover:text-saffron`
+                      : 'text-brown-dark hover:text-saffron'
                   }`}
                 >
                   {link.label}
@@ -120,10 +104,10 @@ export default function Navbar() {
             </div>
 
             <div className="flex items-center gap-2 lg:hidden">
-              <LanguageSwitcher compact inverted={isHome && !scrolled} />
+              <LanguageSwitcher compact />
               <button
                 onClick={() => setMobileOpen(true)}
-                className={`rounded-md p-2 ${textClass}`}
+                className="rounded-md p-2 text-brown-dark"
                 aria-label={text.openMenu}
               >
                 <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
