@@ -4,14 +4,12 @@ import type { OrganizationPersonDTO } from '@hss/domain';
 interface FeaturedPeopleSectionProps {
   eyebrow: string;
   title: string;
-  description: string;
   people: OrganizationPersonDTO[];
 }
 
 export default function FeaturedPeopleSection({
   eyebrow,
   title,
-  description,
   people,
 }: FeaturedPeopleSectionProps) {
   if (!people.length) {
@@ -21,12 +19,9 @@ export default function FeaturedPeopleSection({
   return (
     <section className="section-padding bg-white">
       <div className="mx-auto max-w-7xl">
-        <div className="mb-12 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div>
-            <span className="eyebrow">{eyebrow}</span>
-            <h2 className="section-title mt-4">{title}</h2>
-          </div>
-          <p className="max-w-2xl text-sm leading-7 text-brown-dark/70">{description}</p>
+        <div className="mb-12">
+          <span className="eyebrow">{eyebrow}</span>
+          <h2 className="section-title mt-4">{title}</h2>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">

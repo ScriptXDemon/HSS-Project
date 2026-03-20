@@ -70,14 +70,9 @@ export default async function AboutPage() {
         </section>
 
         <section className="mt-10 surface-panel px-6 py-8 sm:px-8">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <span className="eyebrow">{content.leadershipEyebrow}</span>
-              <h2 className="section-title mt-4">{content.leadershipTitle}</h2>
-            </div>
-            <p className="max-w-2xl text-sm leading-7 text-brown-dark/70">
-              {content.leadershipDescription}
-            </p>
+          <div>
+            <span className="eyebrow">{content.leadershipEyebrow}</span>
+            <h2 className="section-title mt-4">{content.leadershipTitle}</h2>
           </div>
 
           <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">

@@ -47,7 +47,6 @@ const textFieldKeys: Array<{
   { key: 'conclusion', label: 'Conclusion', multiline: true },
   { key: 'leadershipEyebrow', label: 'People Eyebrow' },
   { key: 'leadershipTitle', label: 'People Title' },
-  { key: 'leadershipDescription', label: 'People Description', multiline: true },
 ];
 
 const pointFieldKeys: Array<{
