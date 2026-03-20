@@ -4,7 +4,7 @@ import { decryptSensitiveValue, encryptSensitiveValue } from '../encryption';
 import { AppError } from '../errors';
 import { verifyRazorpaySignature, verifyRazorpayWebhookSignature } from '../razorpay';
 import { parseLeadershipEntries } from '../services/public-content';
-import { uploadLimits, validateImageFile } from '../upload';
+import { extractUploadKeyFromUrl, uploadLimits, validateImageFile } from '../upload';
 
 const validEncryptionKey = '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
 
@@ -37,10 +37,15 @@ describe('leadership parsing', () => {
     const parsed = parseLeadershipEntries(
       JSON.stringify([
         {
+          id: 'person-1',
           name: 'Aditi Sharma',
           role: 'State Convenor',
           photoUrl: 'https://example.com/aditi.jpg',
           bio: 'Coordinates state initiatives.',
+          showOnAbout: true,
+          showOnHome: true,
+          aboutOrder: 1,
+          homeOrder: 1,
         },
       ])
     );
@@ -73,6 +78,18 @@ describe('upload validation', () => {
     });
 
     expect(() => validateImageFile(file, uploadLimits.memberPhoto)).toThrowError(AppError);
+  });
+
+  it('extracts local upload keys from public URLs', () => {
+    expect(extractUploadKeyFromUrl('/uploads/gallery/items/demo.webp')).toBe(
+      'public/gallery/items/demo.webp'
+    );
+  });
+
+  it('extracts private upload keys from protected URLs', () => {
+    expect(
+      extractUploadKeyFromUrl('/api/admin/files?key=private%2Fmembers%2Fphotos%2Fhari.png')
+    ).toBe('private/members/photos/hari.png');
   });
 });
 

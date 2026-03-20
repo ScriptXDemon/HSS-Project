@@ -16,6 +16,7 @@ interface DonationOrderInput {
   donorPhone?: string;
   amount: number;
   isAnonymous?: boolean;
+  cause?: 'temple' | 'event' | 'bhandara' | 'children';
 }
 
 interface ManualDonationInput extends DonationOrderInput {
@@ -121,12 +122,13 @@ export async function createDonationOrderService(input: DonationOrderInput) {
     razorpayPaymentId: undefined,
     receipt: undefined,
     paymentMode: 'RAZORPAY',
-    paymentProofStatus: 'NOT_REQUIRED',
-    paymentProofKey: undefined,
-    verifiedBy: undefined,
-    verifiedAt: undefined,
-    verificationNotes: undefined,
-  });
+      paymentProofStatus: 'NOT_REQUIRED',
+      paymentProofKey: undefined,
+      verifiedBy: undefined,
+      verifiedAt: undefined,
+      verificationNotes: undefined,
+      cause: parsed.data.cause,
+    });
 
   try {
     const order = await createRazorpayOrder({
@@ -204,6 +206,7 @@ export async function submitManualDonationService(input: ManualDonationInput) {
       verifiedBy: undefined,
       verifiedAt: undefined,
       verificationNotes: undefined,
+      cause: parsed.data.cause,
     });
 
     return {

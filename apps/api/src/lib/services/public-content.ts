@@ -1,4 +1,10 @@
-﻿import type {
+import type {
+  AboutContentResponse,
+  BannerDTO,
+  HomeContentResponse,
+  OrganizationPersonDTO,
+} from '@hss/domain';
+import type {
   IEvent,
   IGalleryAlbum,
   IGalleryItem,
@@ -7,26 +13,20 @@
   PaginatedResult,
 } from '@/lib/db/types';
 import { getDb } from '@/lib/db';
-import { pickLanguage, type Language } from '@/lib/i18n';
-
-export interface LeadershipMember {
-  name: string;
-  role: string;
-  photoUrl?: string;
-  bio?: string;
-}
-
-export interface AboutSection {
-  title?: string;
-  body: string;
-}
-
-export interface AboutPageContent {
-  history: AboutSection;
-  mission: AboutSection;
-  vision: AboutSection;
-  leadership: LeadershipMember[];
-}
+import type { Language } from '@/lib/i18n';
+import {
+  ABOUT_PAGE_COPY_KEY,
+  HOME_BANNERS_KEY,
+  ORGANIZATION_ROSTER_KEY,
+  getAboutPeople,
+  getDefaultAboutContent,
+  getDefaultBanners,
+  getFeaturedPeople,
+  getResolvedAboutContent,
+  parseAboutContent,
+  parseBanners,
+  parseRoster,
+} from './organization-content';
 
 export interface GalleryAlbumSummary extends IGalleryAlbum {
   itemCount: number;
@@ -43,173 +43,55 @@ function createEmptyPaginatedResult<T>(page: number, limit: number): PaginatedRe
   };
 }
 
-function getAboutFallback(language: Language): AboutPageContent {
-  return pickLanguage(language, {
-    en: {
-      history: {
-        title: 'Our Journey',
-        body:
-          'Hindu Suraksha Sangh was founded to strengthen social unity, preserve civilizational values, and support community welfare through disciplined grassroots work.',
-      },
-      mission: {
-        title: 'Mission',
-        body:
-          'Organize service-driven initiatives, empower volunteers, and provide a trusted platform for cultural, social, and humanitarian action.',
-      },
-      vision: {
-        title: 'Vision',
-        body:
-          'Build a confident, compassionate, and connected Hindu society rooted in dharma, seva, and national responsibility.',
-      },
-      leadership: [
-        {
-          name: 'State Convenor',
-          role: 'Organizational Leadership',
-          bio: 'Coordinates statewide outreach, membership growth, and strategic direction.',
-        },
-        {
-          name: 'District Coordinator',
-          role: 'Field Operations',
-          bio: 'Leads district-level programs, volunteer support, and local event execution.',
-        },
-        {
-          name: 'Youth Wing Lead',
-          role: 'Community Mobilization',
-          bio: 'Drives youth engagement, training activities, and grassroots participation.',
-        },
-      ],
-    },
-    hi: {
-      history: {
-        title: 'हमारी यात्रा',
-        body:
-          'हिंदू सुरक्षा संघ की स्थापना सामाजिक एकता को मजबूत करने, सभ्यतागत मूल्यों को सुरक्षित रखने और अनुशासित जमीनी कार्य के माध्यम से समाज कल्याण को समर्थन देने के लिए हुई।',
-      },
-      mission: {
-        title: 'मिशन',
-        body:
-          'सेवा-आधारित पहलों का संगठन, कार्यकर्ताओं को सशक्त बनाना और सांस्कृतिक व सामाजिक कार्य के लिए विश्वसनीय मंच उपलब्ध कराना।',
-      },
-      vision: {
-        title: 'दृष्टि',
-        body:
-          'धर्म, सेवा और राष्ट्रीय उत्तरदायित्व पर आधारित आत्मविश्वासी, करुणामय और संगठित हिंदू समाज का निर्माण।',
-      },
-      leadership: [
-        {
-          name: 'राज्य संयोजक',
-          role: 'संगठनात्मक नेतृत्व',
-          bio: 'राज्य स्तरीय विस्तार, सदस्यता वृद्धि और रणनीतिक दिशा का समन्वय।',
-        },
-        {
-          name: 'जिला समन्वयक',
-          role: 'मैदानी संचालन',
-          bio: 'जिला स्तर के कार्यक्रम, स्वयंसेवक सहयोग और स्थानीय आयोजन का नेतृत्व।',
-        },
-        {
-          name: 'युवा प्रकोष्ठ प्रमुख',
-          role: 'समुदाय संगठन',
-          bio: 'युवा सहभागिता, प्रशिक्षण और जमीनी सक्रियता को आगे बढ़ाते हैं।',
-        },
-      ],
-    },
-    mr: {
-      history: {
-        title: 'आपला प्रवास',
-        body:
-          'हिंदू सुरक्षा संघाची स्थापना सामाजिक एकात्मता मजबूत करण्यासाठी, सांस्कृतिक मूल्यांचे संरक्षण करण्यासाठी आणि शिस्तबद्ध तळागाळातील कार्यातून समाजकल्याणाला आधार देण्यासाठी झाली.',
-      },
-      mission: {
-        title: 'ध्येय',
-        body:
-          'सेवा-केंद्रित उपक्रमांचे संघटन करणे, कार्यकर्त्यांना सक्षम करणे आणि सांस्कृतिक, सामाजिक व मानवतावादी कार्यासाठी विश्वासार्ह व्यासपीठ उभे करणे.',
-      },
-      vision: {
-        title: 'दृष्टी',
-        body:
-          'धर्म, सेवा आणि राष्ट्रीय जबाबदारी या मूल्यांवर आधारलेले आत्मविश्वासी, करुणामय आणि संघटित हिंदू समाज उभारणे.',
-      },
-      leadership: [
-        {
-          name: 'राज्य संयोजक',
-          role: 'संघटनात्मक नेतृत्व',
-          bio: 'राज्यस्तरीय विस्तार, सदस्यवाढ आणि धोरणात्मक दिशेचे समन्वयन करतात.',
-        },
-        {
-          name: 'जिल्हा समन्वयक',
-          role: 'मैदानी संचालन',
-          bio: 'जिल्हास्तरीय कार्यक्रम, स्वयंसेवक सहाय्य आणि स्थानिक आयोजन यांचे नेतृत्व करतात.',
-        },
-        {
-          name: 'युवा विभाग प्रमुख',
-          role: 'समुदाय संघटन',
-          bio: 'युवा सहभाग, प्रशिक्षण उपक्रम आणि तळागाळातील चळवळ मजबूत करतात.',
-        },
-      ],
-    },
-  });
+export function parseLeadershipEntries(body?: string | null): OrganizationPersonDTO[] {
+  return getAboutPeople(parseRoster(body));
 }
 
-export function parseLeadershipEntries(body?: string | null, language: Language = 'en'): LeadershipMember[] {
-  const fallback = getAboutFallback(language);
-
-  if (!body) {
-    return fallback.leadership;
-  }
-
-  try {
-    const parsed = JSON.parse(body);
-
-    if (!Array.isArray(parsed)) {
-      return fallback.leadership;
-    }
-
-    const leadership = parsed
-      .filter((entry) => entry && typeof entry === 'object')
-      .map((entry) => {
-        const record = entry as Record<string, unknown>;
-        return {
-          name: String(record.name || '').trim(),
-          role: String(record.role || '').trim(),
-          photoUrl: typeof record.photoUrl === 'string' ? record.photoUrl : undefined,
-          bio: typeof record.bio === 'string' ? record.bio : undefined,
-        };
-      })
-      .filter((entry) => entry.name && entry.role);
-
-    return leadership.length ? leadership : fallback.leadership;
-  } catch {
-    return fallback.leadership;
-  }
-}
-
-export async function getAboutPageContent(language: Language = 'en'): Promise<AboutPageContent> {
-  const fallback = getAboutFallback(language);
-
+async function getOrganizationSiteContent() {
   try {
     const db = await getDb();
-    const [history, mission, vision, leadership] = await Promise.all([
-      db.siteContent.findByKey('about_history'),
-      db.siteContent.findByKey('about_mission'),
-      db.siteContent.findByKey('about_vision'),
-      db.siteContent.findByKey('about_leadership'),
+    const [aboutRecord, bannerRecord, rosterRecord] = await Promise.all([
+      db.siteContent.findByKey(ABOUT_PAGE_COPY_KEY),
+      db.siteContent.findByKey(HOME_BANNERS_KEY),
+      db.siteContent.findByKey(ORGANIZATION_ROSTER_KEY),
     ]);
 
     return {
-      history: history
-        ? { title: history.title || fallback.history.title, body: history.body }
-        : fallback.history,
-      mission: mission
-        ? { title: mission.title || fallback.mission.title, body: mission.body }
-        : fallback.mission,
-      vision: vision
-        ? { title: vision.title || fallback.vision.title, body: vision.body }
-        : fallback.vision,
-      leadership: parseLeadershipEntries(leadership?.body, language),
+      about: parseAboutContent(aboutRecord?.body),
+      banners: parseBanners(bannerRecord?.body),
+      roster: parseRoster(rosterRecord?.body),
     };
   } catch {
-    return fallback;
+    return {
+      about: getDefaultAboutContent(),
+      banners: getDefaultBanners(),
+      roster: parseRoster(undefined),
+    };
   }
+}
+
+export async function getHomePageContent(language: Language = 'en'): Promise<HomeContentResponse> {
+  const content = await getOrganizationSiteContent();
+  const banners = content.banners.slice().sort((left, right) => left.sortOrder - right.sortOrder);
+
+  return {
+    banners: banners.length ? banners : getDefaultBanners(),
+    featuredPeople: getFeaturedPeople(content.roster),
+  };
+}
+
+export async function getHomeBanners(): Promise<BannerDTO[]> {
+  const content = await getOrganizationSiteContent();
+  return content.banners;
+}
+
+export async function getAboutPageContent(language: Language = 'en'): Promise<AboutContentResponse> {
+  const content = await getOrganizationSiteContent();
+
+  return {
+    content: getResolvedAboutContent(content.about, language),
+    people: getAboutPeople(content.roster),
+  };
 }
 
 export async function getImportantLinks() {
@@ -292,6 +174,14 @@ export async function getGalleryAlbumById(
   } catch {
     return null;
   }
+}
+
+export async function getActivities(page = 1, limit = 12) {
+  return getGalleryAlbums(page, limit);
+}
+
+export async function getActivityById(id: string) {
+  return getGalleryAlbumById(id);
 }
 
 export async function getPublicDonors(page = 1, limit = 20): Promise<PaginatedResult<IDonation>> {

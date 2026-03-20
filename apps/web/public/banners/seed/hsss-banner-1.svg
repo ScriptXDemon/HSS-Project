@@ -1,0 +1,29 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 700">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8b1e13" />
+      <stop offset="48%" stop-color="#ea7b25" />
+      <stop offset="100%" stop-color="#f9d58b" />
+    </linearGradient>
+    <radialGradient id="sun" cx="50%" cy="30%" r="60%">
+      <stop offset="0%" stop-color="#fff5d6" stop-opacity="0.95" />
+      <stop offset="100%" stop-color="#fff5d6" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="700" fill="url(#bg)"/>
+  <rect width="1600" height="700" fill="url(#sun)"/>
+  <circle cx="1350" cy="150" r="110" fill="#fff0bf" fill-opacity="0.3"/>
+  <circle cx="250" cy="120" r="140" fill="#fff0bf" fill-opacity="0.18"/>
+  <rect x="80" y="80" width="1440" height="540" rx="42" fill="#ffffff" fill-opacity="0.12" stroke="#fff7df" stroke-opacity="0.22"/>
+  <text x="120" y="180" font-family="Poppins, sans-serif" font-size="30" fill="#fff7df" letter-spacing="5">HINDU SHURAKSHA SEVA SANGH</text>
+  <text x="120" y="285" font-family="Tiro Devanagari Hindi, serif" font-size="76" font-weight="700" fill="#ffffff">हिंदू शुरक्षक्षा सेवा संघ</text>
+  <text x="120" y="360" font-family="Tiro Devanagari Hindi, serif" font-size="34" fill="#fff4d1">धर्म, सेवा और संगठन के लिए समर्पित जनआंदोलन</text>
+  <text x="120" y="430" font-family="Tiro Devanagari Hindi, serif" font-size="26" fill="#fff4d1">जय श्री राम  •  धर्मो रक्षति रक्षिता:</text>
+  <rect x="120" y="485" width="260" height="64" rx="32" fill="#fff4d1"/>
+  <text x="170" y="527" font-family="Poppins, sans-serif" font-size="24" font-weight="700" fill="#8b1e13">Join the Mission</text>
+  <rect x="1120" y="130" width="300" height="300" rx="40" fill="#fff7ea" fill-opacity="0.18"/>
+  <text x="1170" y="220" font-family="Poppins, sans-serif" font-size="30" font-weight="700" fill="#fff8e8">Seva</text>
+  <text x="1170" y="275" font-family="Poppins, sans-serif" font-size="30" font-weight="700" fill="#fff8e8">Sangathan</text>
+  <text x="1170" y="330" font-family="Poppins, sans-serif" font-size="30" font-weight="700" fill="#fff8e8">Sanskar</text>
+  <text x="1170" y="385" font-family="Poppins, sans-serif" font-size="30" font-weight="700" fill="#fff8e8">Security</text>
+</svg>

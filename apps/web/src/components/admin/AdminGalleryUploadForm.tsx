@@ -7,67 +7,67 @@ import { pickLanguage } from '@/lib/i18n';
 
 const copy = {
   en: {
-    title: 'Create gallery album',
-    description: 'Albums and uploaded images become visible on the public gallery as soon as they are saved.',
-    titleLabel: 'Album title',
-    descriptionLabel: 'Album description',
+    title: 'Create activity album',
+    description: 'Uploaded activity albums become visible on the public Activity page as soon as they are saved.',
+    titleLabel: 'Activity title',
+    descriptionLabel: 'Activity description',
     coverLabel: 'Cover image',
-    imagesLabel: 'Gallery images',
+    imagesLabel: 'Activity images',
     optional: 'Optional',
     requiredHint: 'Select one or more images',
     choose: 'Choose file',
     chooseMany: 'Choose files',
     selectedMany: '{count} files selected',
     noCover: 'No cover image selected',
-    noImages: 'No gallery images selected',
+    noImages: 'No activity images selected',
     titlePlaceholder: 'Hanuman Jayanti Seva Camp',
-    descriptionPlaceholder: 'Short summary of the event photos or community activity captured in this album.',
-    submit: 'Create Album',
+    descriptionPlaceholder: 'Short summary of the service work or organisational activity captured in this album.',
+    submit: 'Create Activity',
     submitting: 'Creating...',
-    success: 'Gallery album created successfully.',
-    error: 'Unable to create gallery album.',
+    success: 'Activity created successfully.',
+    error: 'Unable to create activity.',
   },
   hi: {
-    title: 'गैलरी एल्बम बनाएं',
-    description: 'एल्बम और अपलोड की गई छवियाँ सहेजते ही सार्वजनिक गैलरी में दिखाई देंगी।',
-    titleLabel: 'एल्बम शीर्षक',
-    descriptionLabel: 'एल्बम विवरण',
+    title: 'गतिविधि एल्बम बनाएं',
+    description: 'सहेजते ही यह गतिविधि एल्बम सार्वजनिक Activity पेज पर दिखाई देगा।',
+    titleLabel: 'गतिविधि शीर्षक',
+    descriptionLabel: 'गतिविधि विवरण',
     coverLabel: 'कवर छवि',
-    imagesLabel: 'गैलरी छवियाँ',
+    imagesLabel: 'गतिविधि छवियाँ',
     optional: 'वैकल्पिक',
     requiredHint: 'एक या अधिक छवियाँ चुनें',
     choose: 'फ़ाइल चुनें',
     chooseMany: 'फ़ाइलें चुनें',
     selectedMany: '{count} फ़ाइलें चयनित',
     noCover: 'कोई कवर छवि चयनित नहीं है',
-    noImages: 'कोई गैलरी छवि चयनित नहीं है',
+    noImages: 'कोई गतिविधि छवि चयनित नहीं है',
     titlePlaceholder: 'हनुमान जयंती सेवा शिविर',
-    descriptionPlaceholder: 'इस एल्बम में शामिल कार्यक्रम या सामुदायिक गतिविधि का संक्षिप्त सारांश लिखें।',
-    submit: 'एल्बम बनाएं',
+    descriptionPlaceholder: 'इस एल्बम में शामिल सेवा कार्य या संगठनात्मक गतिविधि का संक्षिप्त सार लिखें।',
+    submit: 'गतिविधि बनाएं',
     submitting: 'बनाया जा रहा है...',
-    success: 'गैलरी एल्बम सफलतापूर्वक बनाया गया।',
-    error: 'गैलरी एल्बम बनाया नहीं जा सका।',
+    success: 'गतिविधि सफलतापूर्वक बनाई गई।',
+    error: 'गतिविधि बनाई नहीं जा सकी।',
   },
   mr: {
-    title: 'गॅलरी अल्बम तयार करा',
-    description: 'अल्बम आणि अपलोड केलेल्या प्रतिमा सेव्ह होताच सार्वजनिक गॅलरीत दिसतील.',
-    titleLabel: 'अल्बम शीर्षक',
-    descriptionLabel: 'अल्बम वर्णन',
+    title: 'उपक्रम अल्बम तयार करा',
+    description: 'सेव्ह होताच हा उपक्रम अल्बम सार्वजनिक Activity पृष्ठावर दिसेल.',
+    titleLabel: 'उपक्रम शीर्षक',
+    descriptionLabel: 'उपक्रम वर्णन',
     coverLabel: 'कव्हर प्रतिमा',
-    imagesLabel: 'गॅलरी प्रतिमा',
+    imagesLabel: 'उपक्रम प्रतिमा',
     optional: 'ऐच्छिक',
     requiredHint: 'एक किंवा अधिक प्रतिमा निवडा',
     choose: 'फाइल निवडा',
     chooseMany: 'फाइल्स निवडा',
     selectedMany: '{count} फाइल्स निवडल्या',
     noCover: 'कोणतीही कव्हर प्रतिमा निवडलेली नाही',
-    noImages: 'कोणतीही गॅलरी प्रतिमा निवडलेली नाही',
+    noImages: 'कोणतीही उपक्रम प्रतिमा निवडलेली नाही',
     titlePlaceholder: 'हनुमान जयंती सेवा शिबिर',
-    descriptionPlaceholder: 'या अल्बममध्ये समाविष्ट कार्यक्रम किंवा सामुदायिक उपक्रमाचा छोटा सारांश लिहा.',
-    submit: 'अल्बम तयार करा',
+    descriptionPlaceholder: 'या अल्बममध्ये समाविष्ट सेवा कार्य किंवा संघटनात्मक उपक्रमाचा छोटा सारांश लिहा.',
+    submit: 'उपक्रम तयार करा',
     submitting: 'तयार करत आहे...',
-    success: 'गॅलरी अल्बम यशस्वीपणे तयार झाला.',
-    error: 'गॅलरी अल्बम तयार करता आला नाही.',
+    success: 'उपक्रम यशस्वीरित्या तयार झाला.',
+    error: 'उपक्रम तयार करता आला नाही.',
   },
 } as const;
 
@@ -102,7 +102,7 @@ export default function AdminGalleryUploadForm() {
     const formData = new FormData(form);
 
     startTransition(async () => {
-      const response = await fetch('/api/admin/gallery', {
+      const response = await fetch('/api/admin/activity', {
         method: 'POST',
         body: formData,
       });
@@ -129,16 +129,8 @@ export default function AdminGalleryUploadForm() {
 
       <form onSubmit={handleSubmit} className="mt-6 grid gap-5 lg:grid-cols-2">
         <div>
-          <label htmlFor="gallery-title" className="field-label">
-            {text.titleLabel}
-          </label>
-          <input
-            id="gallery-title"
-            name="title"
-            required
-            className="input-field"
-            placeholder={text.titlePlaceholder}
-          />
+          <label htmlFor="gallery-title" className="field-label">{text.titleLabel}</label>
+          <input id="gallery-title" name="title" required className="input-field" placeholder={text.titlePlaceholder} />
         </div>
 
         <div>
@@ -147,9 +139,7 @@ export default function AdminGalleryUploadForm() {
           </label>
           <label className="flex min-h-[58px] cursor-pointer items-center justify-between rounded-xl border border-dashed border-saffron/40 bg-saffron/5 px-4 py-3 text-sm text-brown-dark">
             <span>{coverName || text.noCover}</span>
-            <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-saffron">
-              {text.choose}
-            </span>
+            <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-saffron">{text.choose}</span>
             <input
               id="gallery-cover"
               name="coverImage"
@@ -162,16 +152,8 @@ export default function AdminGalleryUploadForm() {
         </div>
 
         <div className="lg:col-span-2">
-          <label htmlFor="gallery-description" className="field-label">
-            {text.descriptionLabel}
-          </label>
-          <textarea
-            id="gallery-description"
-            name="description"
-            rows={5}
-            className="input-field min-h-[140px]"
-            placeholder={text.descriptionPlaceholder}
-          />
+          <label htmlFor="gallery-description" className="field-label">{text.descriptionLabel}</label>
+          <textarea id="gallery-description" name="description" rows={5} className="input-field min-h-[140px]" placeholder={text.descriptionPlaceholder} />
         </div>
 
         <div className="lg:col-span-2">
@@ -180,9 +162,7 @@ export default function AdminGalleryUploadForm() {
           </label>
           <label className="flex min-h-[58px] cursor-pointer items-center justify-between rounded-xl border border-dashed border-saffron/40 bg-saffron/5 px-4 py-3 text-sm text-brown-dark">
             <span>{imageLabel || text.noImages}</span>
-            <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-saffron">
-              {text.chooseMany}
-            </span>
+            <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-saffron">{text.chooseMany}</span>
             <input
               id="gallery-images"
               name="images"
@@ -190,22 +170,16 @@ export default function AdminGalleryUploadForm() {
               accept="image/jpeg,image/png,image/webp"
               multiple
               className="hidden"
-              onChange={(currentEvent) =>
-                setImageLabel(getImageLabel(currentEvent.target.files, text.noImages, text.selectedMany))
-              }
+              onChange={(currentEvent) => setImageLabel(getImageLabel(currentEvent.target.files, text.noImages, text.selectedMany))}
             />
           </label>
         </div>
 
-        {error ? <p className="rounded-xl bg-sacred-red/10 px-4 py-3 text-sm text-sacred-red lg:col-span-2">{error}</p> : null}
-        {message ? <p className="rounded-xl bg-green-50 px-4 py-3 text-sm text-green-700 lg:col-span-2">{message}</p> : null}
+        {error ? <p className="lg:col-span-2 rounded-xl bg-sacred-red/10 px-4 py-3 text-sm text-sacred-red">{error}</p> : null}
+        {message ? <p className="lg:col-span-2 rounded-xl bg-green-50 px-4 py-3 text-sm text-green-700">{message}</p> : null}
 
         <div className="lg:col-span-2">
-          <button
-            type="submit"
-            disabled={isPending}
-            className="btn-primary disabled:cursor-not-allowed disabled:opacity-60"
-          >
+          <button type="submit" disabled={isPending} className="btn-primary disabled:cursor-not-allowed disabled:opacity-60">
             {isPending ? text.submitting : text.submit}
           </button>
         </div>

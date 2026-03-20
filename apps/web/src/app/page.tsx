@@ -1,15 +1,33 @@
-import HeroSection from '@/components/home/HeroSection';
+﻿import { cookies } from 'next/headers';
+import FeaturedPeopleSection from '@/components/home/FeaturedPeopleSection';
+import HomeBannerCarousel from '@/components/home/HomeBannerCarousel';
 import MissionSection from '@/components/home/MissionSection';
 import QuickLinksSection from '@/components/home/QuickLinksSection';
-import DonateCallout from '@/components/home/DonateCallout';
+import DonationCauseSection from '@/components/home/DonationCauseSection';
+import { getLanguageFromCookiesStore } from '@/lib/i18n';
+import { getAboutPageContent, getHomePageContent } from '@/lib/services/public-content';
 
-export default function HomePage() {
+export const dynamic = 'force-dynamic';
+
+export default async function HomePage() {
+  const language = getLanguageFromCookiesStore(await cookies());
+  const [homeContent, aboutContent] = await Promise.all([
+    getHomePageContent(language),
+    getAboutPageContent(language),
+  ]);
+
   return (
     <>
-      <HeroSection />
-      <MissionSection />
+      <HomeBannerCarousel banners={homeContent.banners} />
+      <MissionSection content={aboutContent.content} />
+      <FeaturedPeopleSection
+        eyebrow={aboutContent.content.leadershipEyebrow}
+        title={aboutContent.content.leadershipTitle}
+        description={aboutContent.content.leadershipDescription}
+        people={homeContent.featuredPeople}
+      />
       <QuickLinksSection />
-      <DonateCallout />
+      <DonationCauseSection language={language} />
     </>
   );
 }

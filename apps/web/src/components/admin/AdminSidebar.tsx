@@ -16,9 +16,10 @@ const copy = {
     donations: 'Donations',
     contact: 'Contact Messages',
     users: 'Users',
-    content: 'Content',
+    aboutUs: 'About Us',
+    banners: 'Banners',
     events: 'Events',
-    gallery: 'Gallery',
+    activity: 'Activity',
     settings: 'Settings',
   },
   hi: {
@@ -29,9 +30,10 @@ const copy = {
     donations: 'दान',
     contact: 'संपर्क संदेश',
     users: 'उपयोगकर्ता',
-    content: 'सामग्री',
+    aboutUs: 'हमारे बारे में',
+    banners: 'बैनर',
     events: 'कार्यक्रम',
-    gallery: 'गैलरी',
+    activity: 'गतिविधि',
     settings: 'सेटिंग्स',
   },
   mr: {
@@ -42,9 +44,10 @@ const copy = {
     donations: 'देणग्या',
     contact: 'संपर्क संदेश',
     users: 'वापरकर्ते',
-    content: 'सामग्री',
+    aboutUs: 'आमच्याविषयी',
+    banners: 'बॅनर',
     events: 'कार्यक्रम',
-    gallery: 'गॅलरी',
+    activity: 'उपक्रम',
     settings: 'सेटिंग्ज',
   },
 } as const;
@@ -64,9 +67,10 @@ export default function AdminSidebar({ userName }: AdminSidebarProps) {
     { href: '/admin/donations', label: text.donations },
     { href: '/admin/contact-messages', label: text.contact },
     { href: '/admin/users', label: text.users },
-    { href: '/admin/content', label: text.content },
+    { href: '/admin/about-us', label: text.aboutUs },
+    { href: '/admin/banners', label: text.banners },
     { href: '/admin/events', label: text.events },
-    { href: '/admin/gallery', label: text.gallery },
+    { href: '/admin/activity', label: text.activity },
     { href: '/admin/settings', label: text.settings },
   ];
 
@@ -75,9 +79,7 @@ export default function AdminSidebar({ userName }: AdminSidebarProps) {
       <div className="border-b border-stone-temple pb-4">
         <p className="font-heading text-2xl text-brown-dark">{text.title}</p>
         <p className="mt-1 text-sm text-brown-dark/65">{text.subtitle}</p>
-        <p className="mt-3 rounded-2xl bg-saffron/10 px-3 py-2 text-sm font-medium text-saffron">
-          {userName}
-        </p>
+        <p className="mt-3 rounded-2xl bg-saffron/10 px-3 py-2 text-sm font-medium text-saffron">{userName}</p>
       </div>
 
       <nav className="mt-4 space-y-1">
@@ -88,9 +90,7 @@ export default function AdminSidebar({ userName }: AdminSidebarProps) {
               key={link.href}
               href={link.href}
               className={`block rounded-2xl px-4 py-3 text-sm font-medium transition ${
-                isActive
-                  ? 'bg-saffron text-white shadow'
-                  : 'text-brown-dark hover:bg-stone-temple'
+                isActive ? 'bg-saffron text-white shadow' : 'text-brown-dark hover:bg-stone-temple'
               }`}
             >
               {link.label}

@@ -10,6 +10,11 @@ function getRequiredString(formData: FormData, key: string) {
   return typeof value === 'string' ? value : '';
 }
 
+function getOptionalCause(formData: FormData) {
+  const value = getRequiredString(formData, 'cause');
+  return value || undefined;
+}
+
 export async function POST(request: Request) {
   try {
     assertAllowedOrigin(request);
@@ -29,6 +34,7 @@ export async function POST(request: Request) {
       donorPhone: getRequiredString(formData, 'donorPhone'),
       amount: Number(getRequiredString(formData, 'amount') || 0),
       isAnonymous: getRequiredString(formData, 'isAnonymous') === 'true',
+      cause: getOptionalCause(formData) as 'temple' | 'event' | 'bhandara' | 'children' | undefined,
       screenshot: screenshot as File,
     });
 

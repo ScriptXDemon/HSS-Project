@@ -9,7 +9,7 @@ import { pickLanguage } from '@/lib/i18n';
 const copy = {
   en: {
     badge: 'Jai Shri Ram',
-    title: 'Hindu Suraksha Sangh',
+    title: 'Hindu Shuraksha Seva Sangh',
     subtitle: 'Seva, Suraksha, Sangathan',
     description:
       'Dedicated to the protection and promotion of Hindu culture, values, and community welfare across the state.',
@@ -18,7 +18,7 @@ const copy = {
   },
   hi: {
     badge: 'जय श्री राम',
-    title: 'हिंदू सुरक्षा संघ',
+    title: 'हिंदू सुरक्षा सेवा संघ',
     subtitle: 'सेवा, सुरक्षा, संगठन',
     description:
       'राज्यभर में हिंदू संस्कृति, मूल्यों और समाज कल्याण की रक्षा और संवर्धन के लिए समर्पित।',
@@ -27,7 +27,7 @@ const copy = {
   },
   mr: {
     badge: 'जय श्री राम',
-    title: 'हिंदू सुरक्षा संघ',
+    title: 'हिंदू सुरक्षा सेवा संघ',
     subtitle: 'सेवा, सुरक्षा, संघटन',
     description:
       'राज्यभर हिंदू संस्कृती, मूल्ये आणि समाजकल्याणाच्या संरक्षण व संवर्धनासाठी समर्पित.',
@@ -41,16 +41,15 @@ export default function HeroSection() {
   const text = useMemo(() => pickLanguage(language, copy), [language]);
 
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
+    <section className="relative flex min-h-[90vh] items-center justify-center overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-saffron via-saffron-deep to-maroon-deep" />
-
       <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[40rem] text-white font-accent select-none">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none font-accent text-[40rem] text-white">
           Om
         </div>
       </div>
 
-      <div className="relative z-10 text-center px-4 sm:px-6 max-w-4xl mx-auto">
+      <div className="relative z-10 mx-auto max-w-4xl px-4 text-center sm:px-6">
         <div className="mb-6 flex justify-center">
           <SiteLogo
             size={132}
@@ -61,29 +60,29 @@ export default function HeroSection() {
         </div>
 
         <div className="mb-6">
-          <span className="inline-block bg-white/20 backdrop-blur-sm text-white px-4 py-1.5 rounded-full text-sm font-medium">
+          <span className="inline-block rounded-full bg-white/20 px-4 py-1.5 text-sm font-medium text-white backdrop-blur-sm">
             {text.badge}
           </span>
         </div>
 
-        <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-white mb-6 leading-tight">
+        <h1 className="mb-6 font-heading text-4xl leading-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
           {text.title}
         </h1>
 
-        <p className="font-accent text-xl sm:text-2xl text-gold-temple mb-4">{text.subtitle}</p>
+        <p className="mb-4 font-accent text-xl text-gold-temple sm:text-2xl">{text.subtitle}</p>
 
-        <p className="text-lg sm:text-xl text-white/90 max-w-2xl mx-auto mb-10 leading-relaxed">
+        <p className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-white/90 sm:text-xl">
           {text.description}
         </p>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Link
             href="/member-apply"
-            className="bg-white text-saffron-deep font-semibold py-3 px-8 rounded-lg hover:bg-cream transition-colors text-lg shadow-lg"
+            className="rounded-lg bg-white px-8 py-3 text-lg font-semibold text-saffron-deep shadow-lg transition-colors hover:bg-cream"
           >
             {text.primary}
           </Link>
-          <Link href="/donate" className="btn-gold py-3 px-8 text-lg shadow-lg">
+          <Link href="/donate" className="btn-gold px-8 py-3 text-lg shadow-lg">
             {text.secondary}
           </Link>
         </div>

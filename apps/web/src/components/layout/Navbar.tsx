@@ -11,12 +11,12 @@ import MobileMenu from './MobileMenu';
 
 const copy = {
   en: {
-    brand: 'Hindu Suraksha Sangh',
+    brand: 'Hindu Shuraksha Seva Sangh',
     tagline: 'Seva and Sangathan',
     home: 'Home',
     about: 'About Us',
     events: 'Events',
-    gallery: 'Gallery',
+    activity: 'Activity',
     donate: 'Donate',
     join: 'Join Us',
     contact: 'Contact',
@@ -24,12 +24,12 @@ const copy = {
     openMenu: 'Open menu',
   },
   hi: {
-    brand: 'हिंदू सुरक्षा संघ',
+    brand: 'हिंदू सुरक्षा सेवा संघ',
     tagline: 'सेवा और संगठन',
     home: 'होम',
     about: 'हमारे बारे में',
     events: 'कार्यक्रम',
-    gallery: 'गैलरी',
+    activity: 'गतिविधि',
     donate: 'दान',
     join: 'सदस्य बनें',
     contact: 'संपर्क',
@@ -37,12 +37,12 @@ const copy = {
     openMenu: 'मेनू खोलें',
   },
   mr: {
-    brand: 'हिंदू सुरक्षा संघ',
+    brand: 'हिंदू सुरक्षा सेवा संघ',
     tagline: 'सेवा आणि संघटन',
     home: 'मुख्यपृष्ठ',
     about: 'आमच्याविषयी',
     events: 'कार्यक्रम',
-    gallery: 'गॅलरी',
+    activity: 'उपक्रम',
     donate: 'दान',
     join: 'सदस्य व्हा',
     contact: 'संपर्क',
@@ -64,7 +64,7 @@ export default function Navbar() {
       { href: '/', label: text.home },
       { href: '/about', label: text.about },
       { href: '/events', label: text.events },
-      { href: '/gallery', label: text.gallery },
+      { href: '/activity', label: text.activity },
       { href: '/donate', label: text.donate },
       { href: '/member-apply', label: text.join },
       { href: '/contact', label: text.contact },
@@ -83,9 +83,9 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${bgClass}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 lg:h-20">
+      <nav className={`fixed left-0 right-0 top-0 z-50 transition-all duration-300 ${bgClass}`}>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex h-16 items-center justify-between lg:h-20">
             <Link href="/" className="flex items-center space-x-3">
               <SiteLogo
                 size={isHome && !scrolled ? 54 : 48}
@@ -94,39 +94,39 @@ export default function Navbar() {
                 className="transition-all duration-300"
               />
               <div className={`hidden sm:block ${textClass}`}>
-                <p className="font-heading text-lg lg:text-xl leading-tight">{text.brand}</p>
+                <p className="font-heading text-lg leading-tight lg:text-xl">{text.brand}</p>
                 <p className="text-xs opacity-75">{text.tagline}</p>
               </div>
             </Link>
 
-            <div className="hidden lg:flex items-center space-x-1">
+            <div className="hidden items-center space-x-1 lg:flex">
               <LanguageSwitcher inverted={isHome && !scrolled} />
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                     pathname === link.href
-                      ? 'text-saffron font-bold'
+                      ? 'font-bold text-saffron'
                       : `${textClass} hover:text-saffron`
                   }`}
                 >
                   {link.label}
                 </Link>
               ))}
-              <Link href="/login" className="btn-primary ml-4 text-sm py-2 px-4">
+              <Link href="/login" className="btn-primary ml-4 px-4 py-2 text-sm">
                 {text.login}
               </Link>
             </div>
 
-            <div className="lg:hidden flex items-center gap-2">
+            <div className="flex items-center gap-2 lg:hidden">
               <LanguageSwitcher compact inverted={isHome && !scrolled} />
               <button
                 onClick={() => setMobileOpen(true)}
-                className={`p-2 rounded-md ${textClass}`}
+                className={`rounded-md p-2 ${textClass}`}
                 aria-label={text.openMenu}
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
