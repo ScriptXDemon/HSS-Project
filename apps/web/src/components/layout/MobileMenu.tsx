@@ -16,19 +16,19 @@ interface MobileMenuProps {
 
 const copy = {
   en: {
-    brand: 'Hindu Suraksha Sangh',
+    brand: 'Hindu Shuraksha Seva Sangh',
     tagline: 'Seva and Sangathan',
     closeMenu: 'Close menu',
     login: 'Login',
   },
   hi: {
-    brand: 'हिंदू सुरक्षा संघ',
+    brand: 'हिंदू सुरक्षा सेवा संघ',
     tagline: 'सेवा और संगठन',
     closeMenu: 'मेनू बंद करें',
     login: 'लॉगिन',
   },
   mr: {
-    brand: 'हिंदू सुरक्षा संघ',
+    brand: 'हिंदू सुरक्षा सेवा संघ',
     tagline: 'सेवा आणि संघटन',
     closeMenu: 'मेनू बंद करा',
     login: 'लॉगिन',
@@ -40,11 +40,7 @@ export default function MobileMenu({ isOpen, onClose, links, pathname }: MobileM
   const text = useMemo(() => pickLanguage(language, copy), [language]);
 
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
+    document.body.style.overflow = isOpen ? 'hidden' : '';
     return () => {
       document.body.style.overflow = '';
     };
@@ -56,8 +52,8 @@ export default function MobileMenu({ isOpen, onClose, links, pathname }: MobileM
     <div className="fixed inset-0 z-[60] lg:hidden">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
-      <div className="absolute right-0 top-0 h-full w-72 bg-white shadow-xl animate-slide-in">
-        <div className="flex items-center justify-between p-4 border-b border-stone-temple">
+      <div className="animate-slide-in absolute right-0 top-0 h-full w-72 bg-white shadow-xl">
+        <div className="flex items-center justify-between border-b border-stone-temple p-4">
           <div className="flex items-center gap-3">
             <SiteLogo size={44} />
             <div>
@@ -66,7 +62,7 @@ export default function MobileMenu({ isOpen, onClose, links, pathname }: MobileM
             </div>
           </div>
           <button onClick={onClose} className="p-2 text-brown-dark" aria-label={text.closeMenu}>
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -76,15 +72,15 @@ export default function MobileMenu({ isOpen, onClose, links, pathname }: MobileM
           <LanguageSwitcher />
         </div>
 
-        <nav className="p-4 space-y-1">
+        <nav className="space-y-1 p-4">
           {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               onClick={onClose}
-              className={`block px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+              className={`block rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
                 pathname === link.href
-                  ? 'bg-saffron/10 text-saffron font-bold'
+                  ? 'bg-saffron/10 font-bold text-saffron'
                   : 'text-brown-dark hover:bg-stone-temple'
               }`}
             >
@@ -93,8 +89,8 @@ export default function MobileMenu({ isOpen, onClose, links, pathname }: MobileM
           ))}
         </nav>
 
-        <div className="p-4 border-t border-stone-temple">
-          <Link href="/login" onClick={onClose} className="btn-primary block text-center w-full">
+        <div className="border-t border-stone-temple p-4">
+          <Link href="/login" onClick={onClose} className="btn-primary block w-full text-center">
             {text.login}
           </Link>
         </div>

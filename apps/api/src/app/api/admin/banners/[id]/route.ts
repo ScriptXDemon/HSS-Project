@@ -1,0 +1,64 @@
+import { NextResponse } from 'next/server';
+import { createErrorResponse } from '@/lib/api';
+import { requireAdminSession } from '@/lib/server-auth';
+import { assertAllowedOrigin } from '@/lib/security/origin';
+import {
+  deleteAdminBanner,
+  updateAdminBanner,
+} from '@/lib/services/admin-dashboard';
+
+export const runtime = 'nodejs';
+
+function getTextField(formData: FormData, key: string) {
+  const value = formData.get(key);
+  return typeof value === 'string' ? value : '';
+}
+
+function getOptionalFile(formData: FormData, key: string) {
+  const value = formData.get(key);
+  return value instanceof File && value.size > 0 ? value : null;
+}
+
+function getNumberField(formData: FormData, key: string, fallback: number) {
+  const value = Number(getTextField(formData, key));
+  return Number.isFinite(value) ? value : fallback;
+}
+
+export async function PUT(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    await requireAdminSession();
+    assertAllowedOrigin(request);
+    const { id } = await params;
+    const formData = await request.formData();
+    const banner = await updateAdminBanner(id, {
+      title: getTextField(formData, 'title'),
+      subtitle: getTextField(formData, 'subtitle'),
+      ctaLabel: getTextField(formData, 'ctaLabel'),
+      ctaHref: getTextField(formData, 'ctaHref'),
+      image: getOptionalFile(formData, 'image'),
+      sortOrder: getNumberField(formData, 'sortOrder', 1),
+    });
+
+    return NextResponse.json({ banner, message: 'Banner updated successfully.' });
+  } catch (error) {
+    return createErrorResponse(error);
+  }
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    await requireAdminSession();
+    assertAllowedOrigin(request);
+    const { id } = await params;
+    await deleteAdminBanner(id);
+    return NextResponse.json({ success: true, message: 'Banner removed successfully.' });
+  } catch (error) {
+    return createErrorResponse(error);
+  }
+}

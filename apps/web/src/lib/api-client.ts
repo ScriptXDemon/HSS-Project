@@ -1,8 +1,14 @@
 import { headers } from 'next/headers';
 import type { ApiErrorResponse } from '@hss/domain';
 
+const LOCAL_API_BASE = 'http://localhost:3001/api';
+
 function trimTrailingSlash(value: string) {
   return value.replace(/\/$/, '');
+}
+
+function isAbsoluteUrl(value: string) {
+  return /^https?:\/\//i.test(value);
 }
 
 export function getBrowserApiBase() {
@@ -15,12 +21,17 @@ function getServerApiBase() {
     return trimTrailingSlash(internal);
   }
 
-  const publicBase = process.env.NEXT_PUBLIC_SITE_URL;
-  if (publicBase) {
-    return `${trimTrailingSlash(publicBase)}${getBrowserApiBase()}`;
+  const browserBase = getBrowserApiBase();
+  if (isAbsoluteUrl(browserBase)) {
+    return trimTrailingSlash(browserBase);
   }
 
-  return 'http://localhost:3000/api';
+  const publicBase = process.env.NEXT_PUBLIC_SITE_URL;
+  if (publicBase) {
+    return `${trimTrailingSlash(publicBase)}${browserBase}`;
+  }
+
+  return LOCAL_API_BASE;
 }
 
 export async function serverApiFetch<T>(path: string, init: RequestInit = {}): Promise<T> {

@@ -2,20 +2,24 @@
 
 import Image from 'next/image';
 import { useMemo, useState, useTransition } from 'react';
+import type { DonationCause } from '@hss/domain';
 import { useLanguage } from '@/components/providers/LanguageProvider';
 import { formatIndianCurrency } from '@/lib/format';
 import { getIntlLocale, pickLanguage } from '@/lib/i18n';
 
 const presetAmounts = [100, 500, 1000, 5000];
 
+type FieldErrors = Record<string, string[] | undefined>;
+
 interface DonateFormProps {
   qrImageUrl: string;
   qrTitle: string;
   qrNote: string;
   qrConfigured: boolean;
+  selectedCause?: DonationCause;
+  selectedCauseLabel?: string;
+  selectedCauseDescription?: string;
 }
-
-type FieldErrors = Record<string, string[] | undefined>;
 
 const copy = {
   en: {
@@ -44,6 +48,8 @@ const copy = {
     namePlaceholder: 'Your full name',
     emailPlaceholder: 'name@example.com',
     phonePlaceholder: '9876543210',
+    selectedCause: 'Selected Cause',
+    noCause: 'General donation',
   },
   hi: {
     step1Label: 'चरण 1',
@@ -71,6 +77,8 @@ const copy = {
     namePlaceholder: 'आपका पूरा नाम',
     emailPlaceholder: 'name@example.com',
     phonePlaceholder: '9876543210',
+    selectedCause: 'चयनित उद्देश्य',
+    noCause: 'सामान्य दान',
   },
   mr: {
     step1Label: 'पायरी 1',
@@ -98,6 +106,8 @@ const copy = {
     namePlaceholder: 'आपले पूर्ण नाव',
     emailPlaceholder: 'name@example.com',
     phonePlaceholder: '9876543210',
+    selectedCause: 'निवडलेला उद्देश',
+    noCause: 'सामान्य दान',
   },
 } as const;
 
@@ -106,6 +116,9 @@ export default function DonateForm({
   qrTitle,
   qrNote,
   qrConfigured,
+  selectedCause,
+  selectedCauseLabel,
+  selectedCauseDescription,
 }: DonateFormProps) {
   const [isPending, startTransition] = useTransition();
   const [amount, setAmount] = useState(500);
@@ -131,6 +144,9 @@ export default function DonateForm({
     const formData = new FormData(form);
     formData.set('amount', String(amount));
     formData.set('isAnonymous', String(isAnonymous));
+    if (selectedCause) {
+      formData.set('cause', selectedCause);
+    }
 
     const screenshot = formData.get('screenshot');
     if (!(screenshot instanceof File) || screenshot.size === 0) {
@@ -188,6 +204,13 @@ export default function DonateForm({
           </div>
         </div>
       </section>
+
+      <div className="mt-6 rounded-3xl border border-saffron/20 bg-saffron/5 px-5 py-5">
+        <p className="eyebrow">{text.selectedCause}</p>
+        <h3 className="mt-3 text-xl font-semibold text-brown-dark">{selectedCauseLabel || text.noCause}</h3>
+        {selectedCauseDescription ? <p className="mt-2 text-sm leading-7 text-brown-dark/75">{selectedCauseDescription}</p> : null}
+        {selectedCause ? <input type="hidden" name="cause" value={selectedCause} /> : null}
+      </div>
 
       <div className="mt-6 rounded-3xl border border-saffron/20 bg-saffron/5 px-5 py-5">
         <p className="eyebrow">{text.stepsLabel}</p>

@@ -78,6 +78,7 @@ export const donationSchema = z.object({
     .or(z.literal('')),
   amount: z.number().min(1, 'Amount must be at least INR 1'),
   isAnonymous: z.boolean().default(false),
+  cause: z.enum(['temple', 'event', 'bhandara', 'children']).optional(),
 });
 
 export const paginationSchema = z.object({

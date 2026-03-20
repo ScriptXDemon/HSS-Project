@@ -30,12 +30,12 @@ const tiroDevanagari = Tiro_Devanagari_Hindi({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Hindu Suraksha Sangh | हिन्दू सुरक्षा संघ',
-    template: '%s | Hindu Suraksha Sangh',
+    default: 'Hindu Shuraksha Seva Sangh | ????? ??????? ???? ???',
+    template: '%s | Hindu Shuraksha Seva Sangh',
   },
   description:
-    'Hindu Suraksha Sangh - Dedicated to the protection and promotion of Hindu culture, values, and community welfare.',
-  keywords: ['Hindu Suraksha Sangh', 'Hindu organization', 'membership', 'events', 'donate'],
+    'Hindu Shuraksha Seva Sangh - Dedicated to social unity, service, and the protection of Hindu culture, values, and community welfare.',
+  keywords: ['Hindu Shuraksha Seva Sangh', 'Hindu organization', 'membership', 'events', 'activity', 'donate'],
 };
 
 export default async function RootLayout({

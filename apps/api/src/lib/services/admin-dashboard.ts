@@ -1,3 +1,9 @@
+import { randomUUID } from 'crypto';
+import type {
+  BannerDTO,
+  LocalizedAboutContentDTO,
+  OrganizationPersonDTO,
+} from '@hss/domain';
 import { getDb } from '@/lib/db';
 import type {
   IContactMessage,
@@ -13,7 +19,21 @@ import type {
   PaymentStatus,
 } from '@/lib/db/types';
 import { AppError } from '@/lib/errors';
-import { deleteUploadedFile, uploadImageFile, uploadLimits, uploadMediaFile } from '@/lib/upload';
+import {
+  deleteUploadedFile,
+  extractUploadKeyFromUrl,
+  uploadImageFile,
+  uploadLimits,
+  uploadMediaFile,
+} from '@/lib/upload';
+import {
+  ABOUT_PAGE_COPY_KEY,
+  HOME_BANNERS_KEY,
+  ORGANIZATION_ROSTER_KEY,
+  parseAboutContent,
+  parseBanners,
+  parseRoster,
+} from './organization-content';
 import { normalizeOptionalString } from './users';
 
 export interface DashboardStat {
@@ -28,6 +48,15 @@ export interface MemberAdminRow extends IMember {
 
 export interface GalleryAdminRow extends IGalleryAlbum {
   itemCount: number;
+}
+
+export interface BannerMutationInput {
+  title?: string;
+  subtitle?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+  image?: File | null;
+  sortOrder?: number;
 }
 
 export interface AdminDashboardData {
@@ -113,6 +142,22 @@ function slugify(value: string) {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
     .replace(/-{2,}/g, '-');
+}
+
+function sortPeople(people: OrganizationPersonDTO[]) {
+  return people
+    .slice()
+    .sort((left, right) => {
+      if (left.aboutOrder !== right.aboutOrder) {
+        return left.aboutOrder - right.aboutOrder;
+      }
+
+      return left.name.localeCompare(right.name);
+    });
+}
+
+function sortBanners(banners: BannerDTO[]) {
+  return banners.slice().sort((left, right) => left.sortOrder - right.sortOrder);
 }
 
 async function buildUniqueEventSlug(title: string) {
@@ -209,6 +254,320 @@ export async function getAdminContentData() {
   return blocks.data as ISiteContent[];
 }
 
+export async function getAdminAboutContentData(): Promise<{
+  about: LocalizedAboutContentDTO;
+  people: OrganizationPersonDTO[];
+}> {
+  const db = await getDb();
+  const [aboutRecord, rosterRecord] = await Promise.all([
+    db.siteContent.findByKey(ABOUT_PAGE_COPY_KEY),
+    db.siteContent.findByKey(ORGANIZATION_ROSTER_KEY),
+  ]);
+
+  return {
+    about: parseAboutContent(aboutRecord?.body),
+    people: sortPeople(parseRoster(rosterRecord?.body)),
+  };
+}
+
+export async function updateAdminAboutContent(content: LocalizedAboutContentDTO) {
+  const db = await getDb();
+  return db.siteContent.upsertByKey(ABOUT_PAGE_COPY_KEY, {
+    title: 'About Us Content',
+    body: JSON.stringify(content),
+  });
+}
+
+export async function createOrganizationPerson(input: {
+  name: string;
+  role: string;
+  bio?: string;
+  showOnAbout?: boolean;
+  showOnHome?: boolean;
+  aboutOrder?: number;
+  homeOrder?: number;
+  photo?: File | null;
+}) {
+  const db = await getDb();
+  const existing = await db.siteContent.findByKey(ORGANIZATION_ROSTER_KEY);
+  const people = parseRoster(existing?.body);
+
+  let uploadedPhotoKey: string | undefined;
+  let photoUrl: string | undefined;
+
+  try {
+    if (input.photo && input.photo.size > 0) {
+      const uploadedPhoto = await uploadImageFile(input.photo, {
+        folder: 'organization/people',
+        maxSizeBytes: uploadLimits.memberPhoto,
+        visibility: 'public',
+      });
+      uploadedPhotoKey = uploadedPhoto.key;
+      photoUrl = uploadedPhoto.url;
+    }
+
+    const person: OrganizationPersonDTO = {
+      id: randomUUID(),
+      name: input.name.trim(),
+      role: input.role.trim(),
+      bio: normalizeOptionalString(input.bio),
+      photoUrl,
+      photoKey: uploadedPhotoKey,
+      showOnAbout: input.showOnAbout ?? true,
+      showOnHome: input.showOnHome ?? true,
+      aboutOrder: input.aboutOrder ?? people.length + 1,
+      homeOrder: input.homeOrder ?? people.length + 1,
+    };
+
+    if (!person.name || !person.role) {
+      throw new AppError('Person name and role are required', 400);
+    }
+
+    const nextPeople = sortPeople([...people, person]);
+    await db.siteContent.upsertByKey(ORGANIZATION_ROSTER_KEY, {
+      title: 'Organization Roster',
+      body: JSON.stringify(nextPeople),
+    });
+
+    return person;
+  } catch (error) {
+    if (uploadedPhotoKey) {
+      await deleteUploadedFile(uploadedPhotoKey).catch(() => undefined);
+    }
+    throw error;
+  }
+}
+
+export async function updateOrganizationPerson(
+  personId: string,
+  input: {
+    name: string;
+    role: string;
+    bio?: string;
+    showOnAbout?: boolean;
+    showOnHome?: boolean;
+    aboutOrder?: number;
+    homeOrder?: number;
+    photo?: File | null;
+  }
+) {
+  const db = await getDb();
+  const existing = await db.siteContent.findByKey(ORGANIZATION_ROSTER_KEY);
+  const people = parseRoster(existing?.body);
+  const person = people.find((entry) => entry.id === personId);
+
+  if (!person) {
+    throw new AppError('Person not found', 404);
+  }
+
+  let uploadedPhotoKey: string | undefined;
+  let uploadedPhotoUrl: string | undefined;
+
+  try {
+    if (input.photo && input.photo.size > 0) {
+      const uploadedPhoto = await uploadImageFile(input.photo, {
+        folder: 'organization/people',
+        maxSizeBytes: uploadLimits.memberPhoto,
+        visibility: 'public',
+      });
+      uploadedPhotoKey = uploadedPhoto.key;
+      uploadedPhotoUrl = uploadedPhoto.url;
+    }
+
+    const nextPeople = sortPeople(
+      people.map((entry) =>
+        entry.id === personId
+          ? {
+              ...entry,
+              name: input.name.trim(),
+              role: input.role.trim(),
+              bio: normalizeOptionalString(input.bio),
+              showOnAbout: input.showOnAbout ?? entry.showOnAbout,
+              showOnHome: input.showOnHome ?? entry.showOnHome,
+              aboutOrder: input.aboutOrder ?? entry.aboutOrder,
+              homeOrder: input.homeOrder ?? entry.homeOrder,
+              photoUrl: uploadedPhotoUrl ?? entry.photoUrl,
+              photoKey: uploadedPhotoKey ?? entry.photoKey,
+            }
+          : entry
+      )
+    );
+
+    await db.siteContent.upsertByKey(ORGANIZATION_ROSTER_KEY, {
+      title: 'Organization Roster',
+      body: JSON.stringify(nextPeople),
+    });
+
+    if (uploadedPhotoKey && person.photoKey) {
+      await deleteUploadedFile(person.photoKey).catch(() => undefined);
+    }
+
+    return nextPeople.find((entry) => entry.id === personId) || null;
+  } catch (error) {
+    if (uploadedPhotoKey) {
+      await deleteUploadedFile(uploadedPhotoKey).catch(() => undefined);
+    }
+    throw error;
+  }
+}
+
+export async function deleteOrganizationPerson(personId: string) {
+  const db = await getDb();
+  const existing = await db.siteContent.findByKey(ORGANIZATION_ROSTER_KEY);
+  const people = parseRoster(existing?.body);
+  const person = people.find((entry) => entry.id === personId);
+
+  if (!person) {
+    throw new AppError('Person not found', 404);
+  }
+
+  const nextPeople = people.filter((entry) => entry.id !== personId);
+  await db.siteContent.upsertByKey(ORGANIZATION_ROSTER_KEY, {
+    title: 'Organization Roster',
+    body: JSON.stringify(nextPeople),
+  });
+
+  if (person.photoKey) {
+    await deleteUploadedFile(person.photoKey).catch(() => undefined);
+  }
+
+  return true;
+}
+
+export async function getAdminBannersData() {
+  const db = await getDb();
+  const record = await db.siteContent.findByKey(HOME_BANNERS_KEY);
+  return sortBanners(parseBanners(record?.body));
+}
+
+export async function createAdminBanner(input: BannerMutationInput) {
+  const db = await getDb();
+  const record = await db.siteContent.findByKey(HOME_BANNERS_KEY);
+  const banners = sortBanners(parseBanners(record?.body));
+
+  if (banners.length >= 3) {
+    throw new AppError('Only 3 active home banners are allowed', 400);
+  }
+
+  if (!input.image || input.image.size === 0) {
+    throw new AppError('Banner image is required', 400);
+  }
+
+  const uploadedImage = await uploadImageFile(input.image, {
+    folder: 'banners/home',
+    maxSizeBytes: uploadLimits.galleryAsset,
+    visibility: 'public',
+  });
+
+  try {
+    const banner: BannerDTO = {
+      id: randomUUID(),
+      imageUrl: uploadedImage.url,
+      imageKey: uploadedImage.key,
+      title: normalizeOptionalString(input.title),
+      subtitle: normalizeOptionalString(input.subtitle),
+      ctaLabel: normalizeOptionalString(input.ctaLabel),
+      ctaHref: normalizeOptionalString(input.ctaHref),
+      sortOrder: input.sortOrder ?? banners.length + 1,
+    };
+
+    const nextBanners = sortBanners([...banners, banner]).slice(0, 3);
+    await db.siteContent.upsertByKey(HOME_BANNERS_KEY, {
+      title: 'Home Banners',
+      body: JSON.stringify(nextBanners),
+    });
+
+    return banner;
+  } catch (error) {
+    await deleteUploadedFile(uploadedImage.key).catch(() => undefined);
+    throw error;
+  }
+}
+
+export async function updateAdminBanner(bannerId: string, input: BannerMutationInput) {
+  const db = await getDb();
+  const record = await db.siteContent.findByKey(HOME_BANNERS_KEY);
+  const banners = sortBanners(parseBanners(record?.body));
+  const banner = banners.find((entry) => entry.id === bannerId);
+
+  if (!banner) {
+    throw new AppError('Banner not found', 404);
+  }
+
+  let uploadedImageKey: string | undefined;
+  let uploadedImageUrl: string | undefined;
+
+  try {
+    if (input.image && input.image.size > 0) {
+      const uploadedImage = await uploadImageFile(input.image, {
+        folder: 'banners/home',
+        maxSizeBytes: uploadLimits.galleryAsset,
+        visibility: 'public',
+      });
+      uploadedImageKey = uploadedImage.key;
+      uploadedImageUrl = uploadedImage.url;
+    }
+
+    const nextBanners = sortBanners(
+      banners.map((entry) =>
+        entry.id === bannerId
+          ? {
+              ...entry,
+              title: input.title !== undefined ? normalizeOptionalString(input.title) : entry.title,
+              subtitle:
+                input.subtitle !== undefined ? normalizeOptionalString(input.subtitle) : entry.subtitle,
+              ctaLabel:
+                input.ctaLabel !== undefined ? normalizeOptionalString(input.ctaLabel) : entry.ctaLabel,
+              ctaHref: input.ctaHref !== undefined ? normalizeOptionalString(input.ctaHref) : entry.ctaHref,
+              sortOrder: input.sortOrder ?? entry.sortOrder,
+              imageUrl: uploadedImageUrl ?? entry.imageUrl,
+              imageKey: uploadedImageKey ?? entry.imageKey,
+            }
+          : entry
+      )
+    );
+
+    await db.siteContent.upsertByKey(HOME_BANNERS_KEY, {
+      title: 'Home Banners',
+      body: JSON.stringify(nextBanners),
+    });
+
+    if (uploadedImageKey && banner.imageKey) {
+      await deleteUploadedFile(banner.imageKey).catch(() => undefined);
+    }
+
+    return nextBanners.find((entry) => entry.id === bannerId) || null;
+  } catch (error) {
+    if (uploadedImageKey) {
+      await deleteUploadedFile(uploadedImageKey).catch(() => undefined);
+    }
+    throw error;
+  }
+}
+
+export async function deleteAdminBanner(bannerId: string) {
+  const db = await getDb();
+  const record = await db.siteContent.findByKey(HOME_BANNERS_KEY);
+  const banners = sortBanners(parseBanners(record?.body));
+  const banner = banners.find((entry) => entry.id === bannerId);
+
+  if (!banner) {
+    throw new AppError('Banner not found', 404);
+  }
+
+  const nextBanners = banners.filter((entry) => entry.id !== bannerId);
+  await db.siteContent.upsertByKey(HOME_BANNERS_KEY, {
+    title: 'Home Banners',
+    body: JSON.stringify(nextBanners),
+  });
+
+  if (banner.imageKey) {
+    await deleteUploadedFile(banner.imageKey).catch(() => undefined);
+  }
+
+  return true;
+}
+
 export async function getAdminEventsData() {
   const db = await getDb();
   const events = await db.event.findAll({ page: 1, limit: 50 });
@@ -225,6 +584,10 @@ export async function getAdminGalleryData(): Promise<GalleryAdminRow[]> {
       itemCount: await db.galleryItem.count({ albumId: album.id }),
     }))
   );
+}
+
+export async function getAdminActivityData() {
+  return getAdminGalleryData();
 }
 
 export async function getAdminSettingsData(): Promise<Array<ISiteSetting | { key: string; value: string }>> {
@@ -368,6 +731,44 @@ export async function createAdminGallery(input: CreateAdminGalleryInput) {
     await Promise.all(uploadedKeys.map((key) => deleteUploadedFile(key).catch(() => undefined)));
     throw error;
   }
+}
+
+export async function createAdminActivity(input: CreateAdminGalleryInput) {
+  return createAdminGallery(input);
+}
+
+export async function deleteAdminActivity(activityId: string) {
+  const db = await getDb();
+  const activity = await db.galleryAlbum.findWithItems(activityId);
+
+  if (!activity) {
+    throw new AppError('Activity not found', 404);
+  }
+
+  await db.galleryAlbum.delete(activityId);
+
+  const uploadKeys = Array.from(
+    new Set(
+      [activity.coverImage, ...activity.items.flatMap((item) => [item.url, item.thumbnail])]
+        .map((value) => extractUploadKeyFromUrl(value))
+        .filter((value): value is string => Boolean(value))
+    )
+  );
+
+  const cleanupResults = await Promise.allSettled(
+    uploadKeys.map((uploadKey) => deleteUploadedFile(uploadKey))
+  );
+  const failedCleanup = cleanupResults.filter((result) => result.status === 'rejected');
+
+  if (failedCleanup.length) {
+    console.warn('Activity media cleanup was incomplete after deletion.', {
+      activityId,
+      uploadKeys,
+      failedCleanup: failedCleanup.length,
+    });
+  }
+
+  return true;
 }
 
 export async function updateMemberStatus(memberId: string, status: MemberStatus) {

@@ -35,6 +35,10 @@ const DonationSchema = new Schema<DonationDocument>(
     verifiedBy: { type: String, index: true },
     verifiedAt: { type: Date },
     verificationNotes: { type: String },
+    cause: {
+      type: String,
+      enum: ['temple', 'event', 'bhandara', 'children'],
+    },
   },
   { timestamps: true }
 );

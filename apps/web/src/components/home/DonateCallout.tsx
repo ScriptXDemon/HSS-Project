@@ -7,24 +7,24 @@ import { pickLanguage } from '@/lib/i18n';
 
 const copy = {
   en: {
-    title: 'Support Our Cause',
+    title: 'Support the Sangh',
     description:
-      'Your generous donations help us organize events, support community programs, and protect Hindu culture and heritage.',
+      'Choose a seva cause or make a direct contribution to strengthen events, outreach, bhandhara, and community welfare.',
     primary: 'Donate Now',
-    secondary: 'View Our Donors',
+    secondary: 'View Donors',
   },
   hi: {
-    title: 'हमारे उद्देश्य का समर्थन करें',
+    title: 'संघ को सहयोग दें',
     description:
-      'आपका उदार दान कार्यक्रमों, समाज सेवा योजनाओं और हिंदू संस्कृति व विरासत की रक्षा में सहायक है।',
+      'सेवा के किसी उद्देश्य को चुनें या कार्यक्रम, जनसंपर्क, भंडारा और समाज कल्याण के लिए प्रत्यक्ष दान करें।',
     primary: 'अभी दान करें',
     secondary: 'दाता सूची देखें',
   },
   mr: {
-    title: 'आमच्या ध्येयाला पाठिंबा द्या',
+    title: 'संघाला सहकार्य करा',
     description:
-      'आपली उदार देणगी कार्यक्रम, समाजसेवा उपक्रम आणि हिंदू संस्कृती व वारसा संरक्षणासाठी मदत करते.',
-    primary: 'आता देणगी द्या',
+      'सेवेचे कारण निवडा किंवा कार्यक्रम, जनसंपर्क, भंडारा आणि समाजकल्याणासाठी थेट देणगी द्या.',
+    primary: 'आता दान करा',
     secondary: 'दाता सूची पहा',
   },
 } as const;
@@ -35,17 +35,15 @@ export default function DonateCallout() {
 
   return (
     <section className="section-padding bg-stone-temple">
-      <div className="max-w-4xl mx-auto text-center">
-        <h2 className="font-heading text-3xl sm:text-4xl text-brown-dark mb-4">{text.title}</h2>
-        <div className="w-24 h-1 bg-gold-temple mx-auto rounded-full mb-6" />
-        <p className="text-brown-dark/70 mb-8 text-lg leading-relaxed max-w-2xl mx-auto">
-          {text.description}
-        </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link href="/donate" className="btn-primary py-3 px-8 text-lg">
+      <div className="mx-auto max-w-4xl text-center">
+        <h2 className="font-heading text-3xl text-brown-dark sm:text-4xl">{text.title}</h2>
+        <div className="mx-auto mb-6 mt-4 h-1 w-24 rounded-full bg-gold-temple" />
+        <p className="mx-auto mb-8 max-w-2xl text-lg leading-relaxed text-brown-dark/70">{text.description}</p>
+        <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <Link href="/donate" className="btn-primary px-8 py-3 text-lg">
             {text.primary}
           </Link>
-          <Link href="/donors" className="btn-secondary py-3 px-8 text-lg">
+          <Link href="/donors" className="btn-secondary px-8 py-3 text-lg">
             {text.secondary}
           </Link>
         </div>

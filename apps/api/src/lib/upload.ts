@@ -209,6 +209,48 @@ function buildFileUrl(key: string, visibility: UploadVisibility) {
   return buildPublicUrl(key);
 }
 
+export function extractUploadKeyFromUrl(url?: string | null) {
+  if (!url) {
+    return undefined;
+  }
+
+  try {
+    const protectedUrl = new URL(url, 'http://local.test');
+    if (protectedUrl.pathname === '/api/admin/files') {
+      const key = protectedUrl.searchParams.get('key');
+      return key ? decodeURIComponent(key) : undefined;
+    }
+  } catch {
+    // Fall through to public URL parsing.
+  }
+
+  if (url.startsWith('/uploads/')) {
+    return `public/${decodeURIComponent(url.slice('/uploads/'.length))}`;
+  }
+
+  try {
+    const publicBase = `${getPublicStorageBaseUrl()}/`;
+    if (url.startsWith(publicBase)) {
+      return decodeURIComponent(url.slice(publicBase.length));
+    }
+  } catch {
+    // Ignore missing storage configuration and try pathname parsing.
+  }
+
+  try {
+    const parsed = new URL(url);
+    const uploadsMarker = '/uploads/';
+    const uploadsIndex = parsed.pathname.indexOf(uploadsMarker);
+    if (uploadsIndex >= 0) {
+      return `public/${decodeURIComponent(parsed.pathname.slice(uploadsIndex + uploadsMarker.length))}`;
+    }
+  } catch {
+    // Ignore malformed URLs.
+  }
+
+  return undefined;
+}
+
 async function uploadFileLocally(
   key: string,
   body: Buffer,

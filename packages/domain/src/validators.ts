@@ -61,6 +61,7 @@ export const donationSchema = z.object({
   donorPhone: z.string().regex(/^[6-9]\d{9}$/, 'Invalid Indian phone number').optional().or(z.literal('')),
   amount: z.number().min(1, 'Amount must be at least INR 1'),
   isAnonymous: z.boolean().default(false),
+  cause: z.enum(['temple', 'event', 'bhandara', 'children']).optional(),
 });
 
 export const paginationSchema = z.object({

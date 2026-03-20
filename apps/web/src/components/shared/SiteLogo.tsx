@@ -1,4 +1,4 @@
-import Image from 'next/image';
+﻿import Image from 'next/image';
 
 interface SiteLogoProps {
   size?: number;
@@ -13,18 +13,13 @@ export default function SiteLogo({
   className = '',
   framed = false,
 }: SiteLogoProps) {
-  const frameClass = framed
-    ? 'rounded-full bg-white/95 p-1.5 shadow-md shadow-saffron/20'
-    : '';
+  const frameClass = framed ? 'rounded-full bg-white/95 p-1.5 shadow-md shadow-saffron/20' : '';
 
   return (
-    <div
-      className={`relative shrink-0 ${frameClass} ${className}`.trim()}
-      style={{ width: size, height: size }}
-    >
+    <div className={`relative shrink-0 ${frameClass} ${className}`.trim()} style={{ width: size, height: size }}>
       <Image
         src="/logo.webp"
-        alt="Hindu Suraksha Sangh logo"
+        alt="Hindu Shuraksha Seva Sangh logo"
         fill
         priority={priority}
         sizes={`${size}px`}

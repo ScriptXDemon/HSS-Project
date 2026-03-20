@@ -8,10 +8,10 @@ import { pickLanguage } from '@/lib/i18n';
 
 const copy = {
   en: {
-    brand: 'Hindu Suraksha Sangh',
+    brand: 'Hindu Shuraksha Seva Sangh',
     tagline: 'Seva and Sangathan',
     description:
-      'Dedicated to the protection and promotion of Hindu culture, values, and community welfare across the state.',
+      'Dedicated to the protection, service, and organisation of Hindu society through social action, dharmic awareness, and cultural commitment.',
     quickLinks: 'Quick Links',
     contact: 'Contact Us',
     office: 'State Office, India',
@@ -19,7 +19,7 @@ const copy = {
     salutation: 'Jai Shri Ram',
     about: 'About Us',
     events: 'Events',
-    gallery: 'Gallery',
+    activity: 'Activity',
     donate: 'Donate',
     join: 'Join Us',
     contactLink: 'Contact',
@@ -27,10 +27,10 @@ const copy = {
     donors: 'Our Donors',
   },
   hi: {
-    brand: 'हिंदू सुरक्षा संघ',
+    brand: 'हिंदू सुरक्षा सेवा संघ',
     tagline: 'सेवा और संगठन',
     description:
-      'राज्यभर में हिंदू संस्कृति, मूल्यों और समाज कल्याण की रक्षा और संवर्धन के लिए समर्पित।',
+      'सामाजिक कार्य, धर्म जागरण और संस्कृति संरक्षण के माध्यम से हिंदू समाज की रक्षा, सेवा और संगठन के लिए समर्पित।',
     quickLinks: 'त्वरित लिंक',
     contact: 'संपर्क करें',
     office: 'राज्य कार्यालय, भारत',
@@ -38,7 +38,7 @@ const copy = {
     salutation: 'जय श्री राम',
     about: 'हमारे बारे में',
     events: 'कार्यक्रम',
-    gallery: 'गैलरी',
+    activity: 'गतिविधि',
     donate: 'दान',
     join: 'सदस्य बनें',
     contactLink: 'संपर्क',
@@ -46,10 +46,10 @@ const copy = {
     donors: 'दाता सूची',
   },
   mr: {
-    brand: 'हिंदू सुरक्षा संघ',
+    brand: 'हिंदू सुरक्षा सेवा संघ',
     tagline: 'सेवा आणि संघटन',
     description:
-      'राज्यभर हिंदू संस्कृती, मूल्ये आणि समाजकल्याणाच्या संरक्षण व संवर्धनासाठी समर्पित.',
+      'सामाजिक कार्य, धर्मजागृती आणि संस्कृती संरक्षणाच्या माध्यमातून हिंदू समाजाच्या रक्षण, सेवेसाठी आणि संघटनासाठी समर्पित.',
     quickLinks: 'त्वरित दुवे',
     contact: 'संपर्क',
     office: 'राज्य कार्यालय, भारत',
@@ -57,7 +57,7 @@ const copy = {
     salutation: 'जय श्री राम',
     about: 'आमच्याविषयी',
     events: 'कार्यक्रम',
-    gallery: 'गॅलरी',
+    activity: 'उपक्रम',
     donate: 'दान',
     join: 'सदस्य व्हा',
     contactLink: 'संपर्क',
@@ -73,7 +73,7 @@ export default function Footer() {
   const quickLinks = [
     { href: '/about', label: text.about },
     { href: '/events', label: text.events },
-    { href: '/gallery', label: text.gallery },
+    { href: '/activity', label: text.activity },
     { href: '/donate', label: text.donate },
     { href: '/member-apply', label: text.join },
     { href: '/contact', label: text.contactLink },
@@ -82,33 +82,30 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="gradient-maroon text-white relative overflow-hidden">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-5 text-[20rem] font-accent select-none pointer-events-none">
+    <footer className="gradient-maroon relative overflow-hidden text-white">
+      <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none font-accent text-[20rem] opacity-5">
         Om
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           <div>
-            <div className="flex items-center space-x-3 mb-4">
+            <div className="mb-4 flex items-center space-x-3">
               <SiteLogo size={58} framed />
               <div>
                 <p className="font-heading text-xl">{text.brand}</p>
-                <p className="text-sm opacity-75 font-accent">{text.tagline}</p>
+                <p className="font-accent text-sm opacity-75">{text.tagline}</p>
               </div>
             </div>
-            <p className="text-sm text-white/70 leading-relaxed">{text.description}</p>
+            <p className="text-sm leading-relaxed text-white/70">{text.description}</p>
           </div>
 
           <div>
-            <h3 className="font-heading text-gold-temple text-lg mb-4">{text.quickLinks}</h3>
+            <h3 className="mb-4 font-heading text-lg text-gold-temple">{text.quickLinks}</h3>
             <ul className="space-y-2">
               {quickLinks.map((link) => (
                 <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-white/70 hover:text-saffron transition-colors"
-                  >
+                  <Link href={link.href} className="text-sm text-white/70 transition-colors hover:text-saffron">
                     {link.label}
                   </Link>
                 </li>
@@ -117,31 +114,31 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="font-heading text-gold-temple text-lg mb-4">{text.contact}</h3>
+            <h3 className="mb-4 font-heading text-lg text-gold-temple">{text.contact}</h3>
             <div className="space-y-3 text-sm text-white/70">
               <p>{text.brand}</p>
               <p>{text.office}</p>
               <p>
                 Email:{' '}
-                <a href="mailto:info@hindusuraksha.org" className="hover:text-saffron transition-colors">
-                  info@hindusuraksha.org
+                <a href="mailto:info@hindushurakshasevasangh.org" className="transition-colors hover:text-saffron">
+                  info@hindushurakshasevasangh.org
                 </a>
               </p>
               <p>
                 Phone:{' '}
-                <a href="tel:+911234567890" className="hover:text-saffron transition-colors">
-                  +91 12345 67890
+                <a href="tel:+918793895012" className="transition-colors hover:text-saffron">
+                  +91 87938 95012
                 </a>
               </p>
             </div>
           </div>
         </div>
 
-        <div className="mt-8 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 sm:flex-row">
           <p className="text-sm text-white/50">
             &copy; {new Date().getFullYear()} {text.brand}. {text.rights}
           </p>
-          <p className="text-sm text-white/50 font-accent">{text.salutation}</p>
+          <p className="font-accent text-sm text-white/50">{text.salutation}</p>
         </div>
       </div>
     </footer>

@@ -4,6 +4,7 @@ export type MediaType = 'IMAGE' | 'VIDEO';
 export type PaymentStatus = 'PENDING' | 'SUCCESS' | 'FAILED' | 'REFUNDED';
 export type PaymentMode = 'MANUAL_UPI' | 'RAZORPAY';
 export type PaymentProofStatus = 'NOT_REQUIRED' | 'PENDING_REVIEW' | 'VERIFIED' | 'REJECTED';
+export type DonationCause = 'temple' | 'event' | 'bhandara' | 'children';
 
 export interface BaseEntityDTO {
   id: string;
@@ -110,6 +111,7 @@ export interface DonationDTO extends BaseEntityDTO {
   verifiedBy?: string;
   verifiedAt?: string | Date;
   verificationNotes?: string;
+  cause?: DonationCause;
 }
 
 export interface ContactMessageDTO extends BaseEntityDTO {
@@ -155,22 +157,69 @@ export interface LeadershipMemberDTO {
   bio?: string;
 }
 
-export interface AboutSectionDTO {
+export interface BannerDTO {
+  id: string;
+  imageUrl: string;
+  imageKey?: string;
   title?: string;
-  body: string;
+  subtitle?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+  sortOrder: number;
+}
+
+export interface OrganizationPersonDTO extends LeadershipMemberDTO {
+  id: string;
+  photoKey?: string;
+  showOnAbout: boolean;
+  showOnHome: boolean;
+  aboutOrder: number;
+  homeOrder: number;
+}
+
+export interface AboutPageLanguageContentDTO {
+  eyebrow: string;
+  title: string;
+  description: string;
+  intro: string;
+  motto: string;
+  mainWorkTitle: string;
+  mainWorkPoints: string[];
+  futureObjectivesTitle: string;
+  futureObjectivesPoints: string[];
+  whyJoinTitle: string;
+  whyJoinPoints: string[];
+  conclusionTitle: string;
+  conclusion: string;
+  leadershipEyebrow: string;
+  leadershipTitle: string;
+  leadershipDescription: string;
+}
+
+export interface LocalizedAboutContentDTO {
+  en: AboutPageLanguageContentDTO;
+  hi: AboutPageLanguageContentDTO;
+  mr: AboutPageLanguageContentDTO;
 }
 
 export interface AboutContentResponse {
-  history: AboutSectionDTO;
-  mission: AboutSectionDTO;
-  vision: AboutSectionDTO;
-  leadership: LeadershipMemberDTO[];
+  content: AboutPageLanguageContentDTO;
+  people: OrganizationPersonDTO[];
+}
+
+export interface HomeContentResponse {
+  banners: BannerDTO[];
+  featuredPeople: OrganizationPersonDTO[];
 }
 
 export interface EventsListResponse extends PaginatedResultDTO<EventDTO> {}
 export interface EventDetailResponse extends EventDTO {}
 export interface GalleryListResponse extends PaginatedResultDTO<GalleryAlbumSummaryDTO> {}
 export interface GalleryAlbumResponse extends GalleryAlbumDTO {
+  items: GalleryItemDTO[];
+}
+export interface ActivityListResponse extends PaginatedResultDTO<GalleryAlbumSummaryDTO> {}
+export interface ActivityAlbumResponse extends GalleryAlbumDTO {
   items: GalleryItemDTO[];
 }
 export interface DonorsListResponse extends PaginatedResultDTO<DonationDTO> {}
@@ -216,6 +265,19 @@ export interface AdminEventsResponse {
 
 export interface AdminGalleryResponse {
   albums: Array<GalleryAlbumDTO & { itemCount: number }>;
+}
+
+export interface AdminActivityResponse {
+  activities: Array<GalleryAlbumDTO & { itemCount: number }>;
+}
+
+export interface AdminBannersResponse {
+  banners: BannerDTO[];
+}
+
+export interface AdminAboutContentResponse {
+  about: LocalizedAboutContentDTO;
+  people: OrganizationPersonDTO[];
 }
 
 export interface AdminSettingsResponse {

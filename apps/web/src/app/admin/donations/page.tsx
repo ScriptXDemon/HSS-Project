@@ -1,8 +1,14 @@
-import { cookies } from 'next/headers';
+﻿import { cookies } from 'next/headers';
 import DonationStatusActions from '@/components/admin/DonationStatusActions';
 import { formatDisplayDate, formatIndianCurrency } from '@/lib/format';
 import { getIntlLocale, getLanguageFromCookiesStore, getStatusLabel, pickLanguage } from '@/lib/i18n';
 import { getAdminDonationsData } from '@/lib/services/admin-dashboard';
+
+const causeLabels = {
+  en: { temple: 'Temple', event: 'Event', bhandara: 'Bhandhara', children: 'Children' },
+  hi: { temple: 'मंदिर', event: 'कार्यक्रम', bhandara: 'भंडारा', children: 'बच्चे' },
+  mr: { temple: 'मंदिर', event: 'कार्यक्रम', bhandara: 'भंडारा', children: 'मुलांसाठी' },
+} as const;
 
 const copy = {
   en: {
@@ -10,9 +16,9 @@ const copy = {
     description: 'Check uploaded payment screenshots and mark each contribution after review.',
     donor: 'Donor',
     amount: 'Amount',
+    cause: 'Cause',
     status: 'Status',
     submitted: 'Submitted',
-    proof: 'Payment Proof',
     actions: 'Actions',
     noData: 'No donation submissions found.',
   },
@@ -21,9 +27,9 @@ const copy = {
     description: 'अपलोड किए गए भुगतान स्क्रीनशॉट देखें और जाँच के बाद दान की स्थिति अपडेट करें।',
     donor: 'दाता',
     amount: 'राशि',
+    cause: 'उद्देश्य',
     status: 'स्थिति',
     submitted: 'जमा तिथि',
-    proof: 'भुगतान प्रमाण',
     actions: 'कार्य',
     noData: 'कोई दान रिकॉर्ड नहीं मिला।',
   },
@@ -32,9 +38,9 @@ const copy = {
     description: 'अपलोड केलेले पेमेंट स्क्रीनशॉट तपासा आणि पडताळणीनंतर प्रत्येक देणगीची स्थिती अद्यतनित करा.',
     donor: 'दाता',
     amount: 'रक्कम',
+    cause: 'उद्देश',
     status: 'स्थिती',
     submitted: 'सबमिट दिनांक',
-    proof: 'पेमेंट पुरावा',
     actions: 'क्रिया',
     noData: 'कोणतीही देणगी नोंद सापडली नाही.',
   },
@@ -58,6 +64,7 @@ export default async function AdminDonationsPage() {
               <tr className="border-b border-stone-temple text-left text-brown-dark/70">
                 <th className="px-3 py-3">{text.donor}</th>
                 <th className="px-3 py-3">{text.amount}</th>
+                <th className="px-3 py-3">{text.cause}</th>
                 <th className="px-3 py-3">{text.status}</th>
                 <th className="px-3 py-3">{text.submitted}</th>
                 <th className="px-3 py-3">{text.actions}</th>
@@ -71,6 +78,9 @@ export default async function AdminDonationsPage() {
                     <p className="mt-1 text-brown-dark/65">{donation.donorEmail || donation.donorPhone || '-'}</p>
                   </td>
                   <td className="px-3 py-4 text-brown-dark/70">{formatIndianCurrency(donation.amount, locale)}</td>
+                  <td className="px-3 py-4 text-brown-dark/70">
+                    {donation.cause ? causeLabels[language][donation.cause] : '-'}
+                  </td>
                   <td className="px-3 py-4">
                     <span className="rounded-full bg-saffron/10 px-3 py-1 text-xs font-semibold text-saffron">
                       {getStatusLabel(donation.status, language)}
@@ -80,11 +90,7 @@ export default async function AdminDonationsPage() {
                   <td className="px-3 py-4">
                     <DonationStatusActions
                       donationId={donation.id}
-                      proofUrl={
-                        donation.paymentProofKey
-                          ? `/api/admin/files?key=${encodeURIComponent(donation.paymentProofKey)}`
-                          : undefined
-                      }
+                      proofUrl={donation.paymentProofKey ? `/api/admin/files?key=${encodeURIComponent(donation.paymentProofKey)}` : undefined}
                     />
                   </td>
                 </tr>

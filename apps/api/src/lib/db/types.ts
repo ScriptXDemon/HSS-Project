@@ -6,6 +6,7 @@ export type MediaType = 'IMAGE' | 'VIDEO';
 export type PaymentStatus = 'PENDING' | 'SUCCESS' | 'FAILED' | 'REFUNDED';
 export type PaymentMode = 'MANUAL_UPI' | 'RAZORPAY';
 export type PaymentProofStatus = 'NOT_REQUIRED' | 'PENDING_REVIEW' | 'VERIFIED' | 'REJECTED';
+export type DonationCause = 'temple' | 'event' | 'bhandara' | 'children';
 
 export interface BaseEntity {
   id: string;
@@ -98,6 +99,7 @@ export interface IDonation extends BaseEntity {
   verifiedBy?: string;
   verifiedAt?: Date;
   verificationNotes?: string;
+  cause?: DonationCause;
 }
 
 export interface IContactMessage extends BaseEntity {

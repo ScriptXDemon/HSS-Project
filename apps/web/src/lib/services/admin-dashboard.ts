@@ -1,10 +1,12 @@
-﻿import type {
+import type {
+  AdminAboutContentResponse,
+  AdminActivityResponse,
+  AdminBannersResponse,
   AdminContactMessagesResponse,
   AdminContentResponse,
   AdminDashboardResponse,
   AdminDonationsResponse,
   AdminEventsResponse,
-  AdminGalleryResponse,
   AdminMembersResponse,
   AdminSettingsResponse,
   AdminUsersResponse,
@@ -40,14 +42,27 @@ export async function getAdminContentData() {
   return result.blocks;
 }
 
+export async function getAdminAboutContentData() {
+  return serverApiFetch<AdminAboutContentResponse>('/admin/about');
+}
+
+export async function getAdminBannersData() {
+  const result = await serverApiFetch<AdminBannersResponse>('/admin/banners');
+  return result.banners;
+}
+
 export async function getAdminEventsData() {
   const result = await serverApiFetch<AdminEventsResponse>('/admin/events');
   return result.events;
 }
 
+export async function getAdminActivityData() {
+  const result = await serverApiFetch<AdminActivityResponse>('/admin/activity');
+  return result.activities;
+}
+
 export async function getAdminGalleryData() {
-  const result = await serverApiFetch<AdminGalleryResponse>('/admin/gallery');
-  return result.albums;
+  return getAdminActivityData();
 }
 
 export async function getAdminSettingsData() {

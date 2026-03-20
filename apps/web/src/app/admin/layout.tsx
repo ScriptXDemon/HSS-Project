@@ -1,4 +1,4 @@
-import { cookies } from 'next/headers';
+﻿import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import { auth } from '@/lib/auth';
@@ -37,7 +37,7 @@ export default async function AdminLayout({
   const language = getLanguageFromCookiesStore(await cookies());
   const text = pickLanguage(language, copy);
   const roleLabel = getRoleLabel(role, language);
-  const userName = session.user.name || 'Hari';
+  const userName = session.user.name || 'Admin';
 
   return (
     <section className="page-shell">
