@@ -1,4 +1,4 @@
-# Hindu Suraksha Sangh Monorepo
+# Hindu Suraksha Seva Sangh Monorepo
 
 This repository is split for deployment:
 
