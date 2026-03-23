@@ -4,6 +4,8 @@ import { AppError } from '../errors';
 const requireAdminSessionMock = vi.fn();
 const updateDonationStatusMock = vi.fn();
 const updateOrganizationPersonMock = vi.fn();
+const createAdminActivityMock = vi.fn();
+const updateAdminActivityMock = vi.fn();
 const getDbMock = vi.fn();
 
 vi.mock('@/lib/server-auth', () => ({
@@ -11,6 +13,8 @@ vi.mock('@/lib/server-auth', () => ({
 }));
 
 vi.mock('@/lib/services/admin-dashboard', () => ({
+  createAdminActivity: createAdminActivityMock,
+  updateAdminActivity: updateAdminActivityMock,
   updateDonationStatus: updateDonationStatusMock,
   updateOrganizationPerson: updateOrganizationPersonMock,
 }));
@@ -27,6 +31,8 @@ describe('admin routes and readiness', () => {
     requireAdminSessionMock.mockReset();
     updateDonationStatusMock.mockReset();
     updateOrganizationPersonMock.mockReset();
+    createAdminActivityMock.mockReset();
+    updateAdminActivityMock.mockReset();
     getDbMock.mockReset();
   });
 
@@ -141,5 +147,89 @@ describe('admin routes and readiness', () => {
         showOnHome: false,
       })
     );
+  });
+
+  it('passes repeated activity video uploads through the create route', async () => {
+    process.env = {
+      ...process.env,
+      APP_ORIGIN: 'https://hsss-project.netlify.app',
+    };
+    requireAdminSessionMock.mockResolvedValue({ user: { id: 'admin-1', role: 'SUPER_ADMIN' } });
+    createAdminActivityMock.mockResolvedValue({ id: 'activity-1' });
+    const { POST } = await import('@/app/api/admin/activity/route');
+
+    const image = new File(['image'], 'photo.jpg', { type: 'image/jpeg' });
+    const videoOne = new File(['video-1'], 'clip-1.mp4', { type: 'video/mp4' });
+    const videoTwo = new File(['video-2'], 'clip-2.webm', { type: 'video/webm' });
+    const formData = new FormData();
+    formData.set('title', 'Hanuman Jayanti');
+    formData.set('description', 'Album with image and video uploads');
+    formData.append('images', image);
+    formData.append('videos', videoOne);
+    formData.append('videos', videoTwo);
+
+    const response = await POST(
+      new Request('https://example.com/api/admin/activity', {
+        method: 'POST',
+        headers: {
+          origin: 'https://hsss-project.netlify.app',
+        },
+        body: formData,
+      })
+    );
+
+    expect(response.status).toBe(201);
+    expect(createAdminActivityMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        images: expect.any(Array),
+        videos: expect.any(Array),
+      })
+    );
+
+    const createInput = createAdminActivityMock.mock.calls[0]?.[0];
+    expect(createInput.images.map((file: File) => file.name)).toEqual(['photo.jpg']);
+    expect(createInput.videos.map((file: File) => file.name)).toEqual(['clip-1.mp4', 'clip-2.webm']);
+  });
+
+  it('passes repeated activity video uploads through the update route', async () => {
+    process.env = {
+      ...process.env,
+      APP_ORIGIN: 'https://hsss-project.netlify.app',
+    };
+    requireAdminSessionMock.mockResolvedValue({ user: { id: 'admin-1', role: 'SUPER_ADMIN' } });
+    updateAdminActivityMock.mockResolvedValue({ id: 'activity-1' });
+    const { PUT } = await import('@/app/api/admin/activity/[id]/route');
+
+    const image = new File(['image'], 'cover.jpg', { type: 'image/jpeg' });
+    const video = new File(['video'], 'clip-3.mov', { type: 'video/quicktime' });
+    const formData = new FormData();
+    formData.set('title', 'Updated album');
+    formData.set('description', 'Album with appended video upload');
+    formData.append('images', image);
+    formData.append('videos', video);
+
+    const response = await PUT(
+      new Request('https://example.com/api/admin/activity/activity-1', {
+        method: 'PUT',
+        headers: {
+          origin: 'https://hsss-project.netlify.app',
+        },
+        body: formData,
+      }),
+      { params: Promise.resolve({ id: 'activity-1' }) }
+    );
+
+    expect(response.status).toBe(200);
+    expect(updateAdminActivityMock).toHaveBeenCalledWith(
+      'activity-1',
+      expect.objectContaining({
+        images: expect.any(Array),
+        videos: expect.any(Array),
+      })
+    );
+
+    const updateInput = updateAdminActivityMock.mock.calls[0]?.[1];
+    expect(updateInput.images.map((file: File) => file.name)).toEqual(['cover.jpg']);
+    expect(updateInput.videos.map((file: File) => file.name)).toEqual(['clip-3.mov']);
   });
 });

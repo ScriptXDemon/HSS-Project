@@ -151,7 +151,11 @@ export async function getGalleryAlbums(page = 1, limit = 12): Promise<PaginatedR
         return {
           ...album,
           itemCount,
-          previewUrl: album.coverImage || firstItem.data[0]?.thumbnail || firstItem.data[0]?.url,
+          previewUrl:
+            album.coverImage ||
+            (firstItem.data[0]?.type === 'IMAGE'
+              ? firstItem.data[0].thumbnail || firstItem.data[0].url
+              : undefined),
         };
       })
     );

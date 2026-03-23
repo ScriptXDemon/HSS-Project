@@ -184,7 +184,6 @@ function BannerFormFields({
             name="sortOrder"
             type="number"
             min="1"
-            max="3"
             defaultValue={banner?.sortOrder || 1}
             className="input-field"
           />
@@ -305,17 +304,11 @@ export default function AdminBannerManager({ banners }: AdminBannerManagerProps)
             <p className="mt-3 max-w-3xl text-sm leading-7 text-brown-dark/70">{text.description}</p>
           </div>
 
-          <button
-            type="button"
-            disabled={banners.length >= 3}
-            onClick={() => setDrawerState({ mode: 'create' })}
-            className="btn-primary disabled:cursor-not-allowed disabled:opacity-60"
-          >
+          <button type="button" onClick={() => setDrawerState({ mode: 'create' })} className="btn-primary">
             {text.newBanner}
           </button>
         </div>
 
-        {banners.length >= 3 ? <p className="mt-4 text-sm text-sacred-red">{text.full}</p> : null}
         {feedback ? <p className="mt-5 rounded-xl bg-green-50 px-4 py-3 text-sm text-green-700">{feedback}</p> : null}
         {error ? <p className="mt-5 rounded-xl bg-sacred-red/10 px-4 py-3 text-sm text-sacred-red">{error}</p> : null}
 
@@ -390,11 +383,7 @@ export default function AdminBannerManager({ banners }: AdminBannerManagerProps)
         {drawerState?.mode === 'create' ? (
           <form onSubmit={handleCreate} className="space-y-6">
             <BannerFormFields text={text} />
-            <button
-              type="submit"
-              disabled={loadingKey === 'create' || banners.length >= 3}
-              className="btn-primary disabled:cursor-not-allowed disabled:opacity-60"
-            >
+            <button type="submit" disabled={loadingKey === 'create'} className="btn-primary disabled:opacity-60">
               {loadingKey === 'create' ? '...' : text.create}
             </button>
           </form>

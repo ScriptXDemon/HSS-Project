@@ -32,24 +32,28 @@ const copy = {
 } as const;
 
 export default function HomeBannerCarousel({ banners }: HomeBannerCarouselProps) {
-  const safeBanners = banners.slice(0, 3);
+  const orderedBanners = useMemo(
+    () => banners.slice().sort((left, right) => left.sortOrder - right.sortOrder),
+    [banners]
+  );
   const [activeIndex, setActiveIndex] = useState(0);
+  const currentIndex = activeIndex >= orderedBanners.length ? 0 : activeIndex;
   const { language } = useLanguage();
   const text = useMemo(() => pickLanguage(language, copy), [language]);
 
   useEffect(() => {
-    if (safeBanners.length <= 1) {
+    if (orderedBanners.length <= 1) {
       return;
     }
 
     const timer = window.setInterval(() => {
-      setActiveIndex((current) => (current + 1) % safeBanners.length);
+      setActiveIndex((current) => (current + 1) % orderedBanners.length);
     }, 6000);
 
     return () => window.clearInterval(timer);
-  }, [safeBanners.length]);
+  }, [orderedBanners.length]);
 
-  if (!safeBanners.length) {
+  if (!orderedBanners.length) {
     return null;
   }
 
@@ -58,18 +62,18 @@ export default function HomeBannerCarousel({ banners }: HomeBannerCarouselProps)
   }
 
   function goPrevious() {
-    setActiveIndex((current) => (current - 1 + safeBanners.length) % safeBanners.length);
+    setActiveIndex((current) => (current - 1 + orderedBanners.length) % orderedBanners.length);
   }
 
   function goNext() {
-    setActiveIndex((current) => (current + 1) % safeBanners.length);
+    setActiveIndex((current) => (current + 1) % orderedBanners.length);
   }
 
   return (
     <section className="relative overflow-hidden bg-[#120804] pt-16 lg:pt-20">
       <div className="relative min-h-[48vh] md:min-h-[60vh] xl:min-h-[72vh]">
-        {safeBanners.map((banner, index) => {
-          const active = index === activeIndex;
+        {orderedBanners.map((banner, index) => {
+          const active = index === currentIndex;
 
           return (
             <div
@@ -93,7 +97,7 @@ export default function HomeBannerCarousel({ banners }: HomeBannerCarouselProps)
           );
         })}
 
-        {safeBanners.length > 1 ? (
+        {orderedBanners.length > 1 ? (
           <>
             <div className="pointer-events-none absolute inset-y-0 left-0 right-0 z-10 flex items-center justify-between px-4 sm:px-6 lg:px-8">
               <button
@@ -125,13 +129,13 @@ export default function HomeBannerCarousel({ banners }: HomeBannerCarouselProps)
                   className="flex max-w-full items-center gap-2 overflow-x-auto rounded-[1.25rem] border border-white/10 bg-black/14 px-2 py-2 backdrop-blur"
                   aria-label={text.thumbnails}
                 >
-                  {safeBanners.map((banner, index) => (
+                  {orderedBanners.map((banner, index) => (
                     <button
                       key={banner.id}
                       type="button"
                       onClick={() => goTo(index)}
                       className={`relative h-12 w-20 shrink-0 overflow-hidden rounded-lg border transition sm:h-14 sm:w-24 ${
-                        index === activeIndex
+                        index === currentIndex
                           ? 'border-gold-temple shadow-lg shadow-gold-temple/20'
                           : 'border-white/15 opacity-70 hover:opacity-100'
                       }`}
@@ -146,7 +150,7 @@ export default function HomeBannerCarousel({ banners }: HomeBannerCarouselProps)
                       />
                       <div
                         className={`absolute inset-0 ${
-                          index === activeIndex ? 'bg-transparent' : 'bg-brown-dark/18'
+                          index === currentIndex ? 'bg-transparent' : 'bg-brown-dark/18'
                         }`}
                       />
                     </button>

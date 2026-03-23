@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   getAboutPeople,
   getFeaturedPeople,
+  parseBanners,
   parseRoster,
 } from '../services/organization-content';
 
@@ -63,5 +64,22 @@ describe('organization roster content', () => {
       role: 'राष्ट्रीय अध्यक्ष',
       bio: 'English bio',
     });
+  });
+  it('keeps every stored banner instead of truncating to three', () => {
+    const banners = parseBanners(
+      JSON.stringify([
+        { id: 'banner-4', imageUrl: '/banner-4.jpg', sortOrder: 4 },
+        { id: 'banner-2', imageUrl: '/banner-2.jpg', sortOrder: 2 },
+        { id: 'banner-1', imageUrl: '/banner-1.jpg', sortOrder: 1 },
+        { id: 'banner-3', imageUrl: '/banner-3.jpg', sortOrder: 3 },
+      ])
+    );
+
+    expect(banners.map((banner) => banner.id)).toEqual([
+      'banner-1',
+      'banner-2',
+      'banner-3',
+      'banner-4',
+    ]);
   });
 });

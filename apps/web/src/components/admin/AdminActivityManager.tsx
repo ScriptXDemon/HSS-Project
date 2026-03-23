@@ -128,6 +128,8 @@ function ActivityFormFields({
   activity?: ActivityRow;
   text: (typeof copy)['en'];
 }) {
+  const mediaUploadHint = 'Select one or more images or videos';
+
   return (
     <div className="space-y-5">
       {activity?.coverImage ? (
@@ -180,12 +182,25 @@ function ActivityFormFields({
 
       <div>
         <label className="field-label">
-          {text.imagesLabel} <span className="text-brown-dark/50">({text.requiredHint})</span>
+          {text.imagesLabel} <span className="text-brown-dark/50">({mediaUploadHint})</span>
         </label>
         <input
           name="images"
           type="file"
           accept="image/jpeg,image/png,image/webp"
+          multiple
+          className="input-field file:mr-3 file:rounded-full file:border-0 file:bg-saffron file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
+        />
+      </div>
+
+      <div>
+        <label className="field-label">
+          Add activity videos <span className="text-brown-dark/50">({mediaUploadHint})</span>
+        </label>
+        <input
+          name="videos"
+          type="file"
+          accept="video/mp4,video/webm,video/quicktime"
           multiple
           className="input-field file:mr-3 file:rounded-full file:border-0 file:bg-saffron file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white"
         />
