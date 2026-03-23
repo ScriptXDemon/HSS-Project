@@ -34,6 +34,7 @@ export async function PUT(
       description: getTextField(formData, 'description'),
       coverImage: getOptionalFile(formData, 'coverImage'),
       images: getFiles(formData, 'images'),
+      videos: getFiles(formData, 'videos'),
     });
 
     return NextResponse.json({ activity, message: 'Activity updated successfully.' });

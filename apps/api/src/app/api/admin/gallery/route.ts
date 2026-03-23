@@ -41,6 +41,7 @@ export async function POST(request: Request) {
       description: getTextField(formData, 'description'),
       coverImage: getOptionalFile(formData, 'coverImage'),
       images: getFiles(formData, 'images'),
+      videos: [],
     });
 
     return NextResponse.json({ album, message: 'Gallery album created successfully.' }, { status: 201 });

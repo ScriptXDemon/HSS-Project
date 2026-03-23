@@ -41,6 +41,7 @@ export async function POST(request: Request) {
       description: getTextField(formData, 'description'),
       coverImage: getOptionalFile(formData, 'coverImage'),
       images: getFiles(formData, 'images'),
+      videos: getFiles(formData, 'videos'),
     });
 
     return NextResponse.json({ activity, message: 'Activity created successfully.' }, { status: 201 });

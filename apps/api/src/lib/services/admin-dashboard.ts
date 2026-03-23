@@ -92,10 +92,12 @@ export interface CreateAdminGalleryInput {
   description?: string;
   coverImage?: File | null;
   images: File[];
+  videos: File[];
 }
 
-export interface UpdateAdminGalleryInput extends Omit<CreateAdminGalleryInput, 'images'> {
+export interface UpdateAdminGalleryInput extends Omit<CreateAdminGalleryInput, 'images' | 'videos'> {
   images?: File[];
+  videos?: File[];
 }
 
 export interface DonationVerificationInput {
@@ -488,10 +490,6 @@ export async function createAdminBanner(input: BannerMutationInput) {
   const record = await db.siteContent.findByKey(HOME_BANNERS_KEY);
   const banners = sortBanners(parseBanners(record?.body));
 
-  if (banners.length >= 3) {
-    throw new AppError('Only 3 active home banners are allowed', 400);
-  }
-
   if (!input.image || input.image.size === 0) {
     throw new AppError('Banner image is required', 400);
   }
@@ -514,7 +512,7 @@ export async function createAdminBanner(input: BannerMutationInput) {
       sortOrder: input.sortOrder ?? banners.length + 1,
     };
 
-    const nextBanners = sortBanners([...banners, banner]).slice(0, 3);
+    const nextBanners = sortBanners([...banners, banner]);
     await db.siteContent.upsertByKey(HOME_BANNERS_KEY, {
       title: 'Home Banners',
       body: JSON.stringify(nextBanners),
@@ -835,6 +833,49 @@ export async function deleteAdminEvent(eventId: string) {
   return true;
 }
 
+interface UploadedGalleryItem {
+  type: 'IMAGE' | 'VIDEO';
+  url: string;
+  thumbnail?: string;
+}
+
+async function uploadGalleryItems(
+  images: File[],
+  videos: File[],
+  uploadedKeys: string[]
+): Promise<UploadedGalleryItem[]> {
+  const uploadedItems: UploadedGalleryItem[] = [];
+
+  for (const image of images) {
+    const uploadedImage = await uploadImageFile(image, {
+      folder: 'gallery/items',
+      maxSizeBytes: uploadLimits.galleryAsset,
+      visibility: 'public',
+    });
+    uploadedKeys.push(uploadedImage.key);
+    uploadedItems.push({
+      type: 'IMAGE',
+      url: uploadedImage.url,
+      thumbnail: uploadedImage.url,
+    });
+  }
+
+  for (const video of videos) {
+    const uploadedVideo = await uploadMediaFile(video, {
+      folder: 'gallery/items',
+      maxSizeBytes: uploadLimits.eventVideo,
+      visibility: 'public',
+    });
+    uploadedKeys.push(uploadedVideo.key);
+    uploadedItems.push({
+      type: 'VIDEO',
+      url: uploadedVideo.url,
+    });
+  }
+
+  return uploadedItems;
+}
+
 export async function createAdminGallery(input: CreateAdminGalleryInput) {
   const normalizedTitle = input.title.trim();
 
@@ -842,12 +883,12 @@ export async function createAdminGallery(input: CreateAdminGalleryInput) {
     throw new AppError('Album title is required', 400);
   }
 
-  if (!input.images.length && (!input.coverImage || input.coverImage.size === 0)) {
-    throw new AppError('Upload at least one gallery image', 400);
+  if (!input.images.length && !input.videos.length && (!input.coverImage || input.coverImage.size === 0)) {
+    throw new AppError('Upload at least one gallery image or video', 400);
   }
 
   const uploadedKeys: string[] = [];
-  const uploadedImages: string[] = [];
+  const uploadedItems: UploadedGalleryItem[] = [];
   let coverImageUrl: string | undefined;
 
   try {
@@ -861,34 +902,30 @@ export async function createAdminGallery(input: CreateAdminGalleryInput) {
       coverImageUrl = uploadedCover.url;
     }
 
-    for (const image of input.images) {
-      const uploadedImage = await uploadImageFile(image, {
-        folder: 'gallery/items',
-        maxSizeBytes: uploadLimits.galleryAsset,
-        visibility: 'public',
-      });
-      uploadedKeys.push(uploadedImage.key);
-      uploadedImages.push(uploadedImage.url);
-    }
+    uploadedItems.push(...(await uploadGalleryItems(input.images, input.videos, uploadedKeys)));
 
-    if (!uploadedImages.length && coverImageUrl) {
-      uploadedImages.push(coverImageUrl);
+    if (!uploadedItems.length && coverImageUrl) {
+      uploadedItems.push({
+        type: 'IMAGE',
+        url: coverImageUrl,
+        thumbnail: coverImageUrl,
+      });
     }
 
     const db = await getDb();
     const album = await db.galleryAlbum.create({
       title: normalizedTitle,
       description: normalizeOptionalString(input.description),
-      coverImage: coverImageUrl || uploadedImages[0],
+      coverImage: coverImageUrl || uploadedItems.find((item) => item.type === 'IMAGE')?.url,
     });
 
     await Promise.all(
-      uploadedImages.map((url, index) =>
+      uploadedItems.map((item, index) =>
         db.galleryItem.create({
           albumId: album.id,
-          type: 'IMAGE',
-          url,
-          thumbnail: url,
+          type: item.type,
+          url: item.url,
+          thumbnail: item.thumbnail,
           caption: undefined,
           sortOrder: index,
         })
@@ -921,7 +958,7 @@ export async function updateAdminGallery(activityId: string, input: UpdateAdminG
   }
 
   const uploadedKeys: string[] = [];
-  const uploadedImages: string[] = [];
+  const uploadedItems: UploadedGalleryItem[] = [];
   let uploadedCoverKey: string | undefined;
   let uploadedCoverUrl: string | undefined;
 
@@ -937,15 +974,7 @@ export async function updateAdminGallery(activityId: string, input: UpdateAdminG
       uploadedKeys.push(uploadedCover.key);
     }
 
-    for (const image of input.images ?? []) {
-      const uploadedImage = await uploadImageFile(image, {
-        folder: 'gallery/items',
-        maxSizeBytes: uploadLimits.galleryAsset,
-        visibility: 'public',
-      });
-      uploadedKeys.push(uploadedImage.key);
-      uploadedImages.push(uploadedImage.url);
-    }
+    uploadedItems.push(...(await uploadGalleryItems(input.images ?? [], input.videos ?? [], uploadedKeys)));
 
     const updatedAlbum = await db.galleryAlbum.update(activityId, {
       title: normalizedTitle,
@@ -961,12 +990,12 @@ export async function updateAdminGallery(activityId: string, input: UpdateAdminG
       activity.items.reduce((highest, item) => Math.max(highest, item.sortOrder), -1) + 1;
 
     await Promise.all(
-      uploadedImages.map((url, index) =>
+      uploadedItems.map((item, index) =>
         db.galleryItem.create({
           albumId: activityId,
-          type: 'IMAGE',
-          url,
-          thumbnail: url,
+          type: item.type,
+          url: item.url,
+          thumbnail: item.thumbnail,
           caption: undefined,
           sortOrder: nextSortOrder + index,
         })

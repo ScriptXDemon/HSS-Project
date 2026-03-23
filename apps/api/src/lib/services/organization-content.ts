@@ -440,8 +440,7 @@ export function parseBanners(body?: string | null): BannerDTO[] {
         } satisfies BannerDTO;
       })
       .filter((banner) => banner.id && banner.imageUrl)
-      .sort((left, right) => left.sortOrder - right.sortOrder)
-      .slice(0, 3);
+      .sort((left, right) => left.sortOrder - right.sortOrder);
 
     return banners.length ? banners : fallback;
   } catch {
