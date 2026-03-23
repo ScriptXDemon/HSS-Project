@@ -33,6 +33,35 @@ function getOptionalFile(formData: FormData, key: string) {
   return value instanceof File && value.size > 0 ? value : null;
 }
 
+function getOptionalTextField(formData: FormData, key: string) {
+  const value = getTextField(formData, key).trim();
+  return value || undefined;
+}
+
+function getPersonContent(formData: FormData) {
+  const legacyName = getOptionalTextField(formData, 'name');
+  const legacyRole = getOptionalTextField(formData, 'role');
+  const legacyBio = getOptionalTextField(formData, 'bio');
+
+  return {
+    en: {
+      name: getTextField(formData, 'nameEn') || legacyName || '',
+      role: getTextField(formData, 'roleEn') || legacyRole || '',
+      bio: getOptionalTextField(formData, 'bioEn') || legacyBio,
+    },
+    hi: {
+      name: getOptionalTextField(formData, 'nameHi'),
+      role: getOptionalTextField(formData, 'roleHi'),
+      bio: getOptionalTextField(formData, 'bioHi'),
+    },
+    mr: {
+      name: getOptionalTextField(formData, 'nameMr'),
+      role: getOptionalTextField(formData, 'roleMr'),
+      bio: getOptionalTextField(formData, 'bioMr'),
+    },
+  };
+}
+
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -43,9 +72,7 @@ export async function PUT(
     const { id } = await params;
     const formData = await request.formData();
     const person = await updateOrganizationPerson(id, {
-      name: getTextField(formData, 'name'),
-      role: getTextField(formData, 'role'),
-      bio: getTextField(formData, 'bio'),
+      content: getPersonContent(formData),
       showOnAbout: getBooleanField(formData, 'showOnAbout', false),
       showOnHome: getBooleanField(formData, 'showOnHome', false),
       aboutOrder: getNumberField(formData, 'aboutOrder', 1),

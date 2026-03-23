@@ -4,6 +4,7 @@ import { Poppins, Yatra_One, Tiro_Devanagari_Hindi } from 'next/font/google';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import LanguageProvider from '@/components/providers/LanguageProvider';
+import RouteTransitionProvider from '@/components/providers/RouteTransitionProvider';
 import { getLanguageFromCookiesStore } from '@/lib/i18n';
 import './globals.css';
 
@@ -50,11 +51,13 @@ export default async function RootLayout({
       <body
         className={`${poppins.variable} ${yatraOne.variable} ${tiroDevanagari.variable} antialiased`}
       >
-        <LanguageProvider initialLanguage={language}>
-          <Navbar />
-          <main className="min-h-screen">{children}</main>
-          <Footer />
-        </LanguageProvider>
+        <RouteTransitionProvider>
+          <LanguageProvider initialLanguage={language}>
+            <Navbar />
+            <main className="min-h-screen">{children}</main>
+            <Footer />
+          </LanguageProvider>
+        </RouteTransitionProvider>
       </body>
     </html>
   );
