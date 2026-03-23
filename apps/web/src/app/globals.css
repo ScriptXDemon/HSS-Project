@@ -8,6 +8,20 @@
     --foreground: #3D1C00;
   }
 
+  @keyframes route-loader-bar {
+    0% {
+      transform: translateX(-120%);
+    }
+
+    50% {
+      transform: translateX(140%);
+    }
+
+    100% {
+      transform: translateX(320%);
+    }
+  }
+
   body {
     @apply bg-cream text-brown-dark font-body;
   }
@@ -93,5 +107,9 @@
 
   .eyebrow {
     @apply inline-flex items-center rounded-full border border-saffron/20 bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-saffron;
+  }
+
+  .route-loader-bar {
+    animation: route-loader-bar 1.2s ease-in-out infinite;
   }
 }

@@ -1,8 +1,11 @@
-﻿import type {
+import type {
+  AdminOrganizationPersonDTO,
   AboutPageLanguageContentDTO,
   BannerDTO,
   LocalizedAboutContentDTO,
+  LocalizedOrganizationPersonContentDTO,
   OrganizationPersonDTO,
+  OrganizationPersonLanguageContentDTO,
 } from '@hss/domain';
 import type { Language } from '@/lib/i18n';
 
@@ -10,7 +13,83 @@ export const HOME_BANNERS_KEY = 'home_banners';
 export const ABOUT_PAGE_COPY_KEY = 'about_page_copy';
 export const ORGANIZATION_ROSTER_KEY = 'organization_roster';
 
-function sortPeople(people: OrganizationPersonDTO[]) {
+function normalizeOptionalString(value: unknown) {
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+
+  const normalized = value.trim();
+  return normalized || undefined;
+}
+
+function createLocalizedPersonContent(
+  en: OrganizationPersonLanguageContentDTO,
+  hi?: OrganizationPersonLanguageContentDTO,
+  mr?: OrganizationPersonLanguageContentDTO
+): LocalizedOrganizationPersonContentDTO {
+  return {
+    en,
+    ...(hi ? { hi } : {}),
+    ...(mr ? { mr } : {}),
+  };
+}
+
+export function resolveLocalizedOrganizationPersonContent(
+  content: LocalizedOrganizationPersonContentDTO,
+  language: Language
+): OrganizationPersonLanguageContentDTO {
+  const english = {
+    name: content.en.name.trim(),
+    role: content.en.role.trim(),
+    bio: normalizeOptionalString(content.en.bio),
+  };
+  const hindi = content.hi ?? {};
+  const marathi = content.mr ?? {};
+
+  if (language === 'mr') {
+    return {
+      name: marathi.name?.trim() || hindi.name?.trim() || english.name,
+      role: marathi.role?.trim() || hindi.role?.trim() || english.role,
+      bio: normalizeOptionalString(marathi.bio) ?? normalizeOptionalString(hindi.bio) ?? english.bio,
+    };
+  }
+
+  if (language === 'hi') {
+    return {
+      name: hindi.name?.trim() || english.name,
+      role: hindi.role?.trim() || english.role,
+      bio: normalizeOptionalString(hindi.bio) ?? english.bio,
+    };
+  }
+
+  return english;
+}
+
+export function resolveOrganizationPerson(
+  person: AdminOrganizationPersonDTO,
+  language: Language
+): OrganizationPersonDTO {
+  const content = resolveLocalizedOrganizationPersonContent(person.content, language);
+
+  return {
+    id: person.id,
+    name: content.name,
+    role: content.role,
+    bio: content.bio,
+    photoUrl: person.photoUrl,
+    photoKey: person.photoKey,
+    showOnAbout: person.showOnAbout,
+    showOnHome: person.showOnHome,
+    aboutOrder: person.aboutOrder,
+    homeOrder: person.homeOrder,
+  };
+}
+
+function getSortablePersonName(person: AdminOrganizationPersonDTO) {
+  return resolveLocalizedOrganizationPersonContent(person.content, 'en').name;
+}
+
+function sortPeople(people: AdminOrganizationPersonDTO[]) {
   return people
     .slice()
     .sort((left, right) => {
@@ -18,7 +97,7 @@ function sortPeople(people: OrganizationPersonDTO[]) {
         return left.aboutOrder - right.aboutOrder;
       }
 
-      return left.name.localeCompare(right.name);
+      return getSortablePersonName(left).localeCompare(getSortablePersonName(right));
     });
 }
 
@@ -54,13 +133,27 @@ export function getDefaultBanners(): BannerDTO[] {
   ];
 }
 
-export function getDefaultRoster(): OrganizationPersonDTO[] {
+export function getDefaultRoster(): AdminOrganizationPersonDTO[] {
   return [
     {
       id: 'seed-person-1',
-      name: 'महंत राजू दास महाराज',
-      role: 'राष्ट्रीय अध्यक्ष',
-      bio: 'संघ की वैचारिक दिशा, राष्ट्रव्यापी विस्तार और समाज जागरण अभियानों का नेतृत्व करते हैं।',
+      content: createLocalizedPersonContent(
+        {
+          name: 'Mahant Raju Das Maharaj',
+          role: 'National President',
+          bio: 'Leads the Sangh’s ideological direction, nationwide expansion, and public-awareness campaigns.',
+        },
+        {
+          name: 'महंत राजू दास महाराज',
+          role: 'राष्ट्रीय अध्यक्ष',
+          bio: 'संघ की वैचारिक दिशा, राष्ट्रव्यापी विस्तार और समाज जागरण अभियानों का नेतृत्व करते हैं।',
+        },
+        {
+          name: 'महंत राजू दास महाराज',
+          role: 'राष्ट्रीय अध्यक्ष',
+          bio: 'संघाच्या वैचारिक दिशेला, देशव्यापी विस्ताराला आणि समाजजागृती मोहिमांना नेतृत्व देतात.',
+        }
+      ),
       showOnAbout: true,
       showOnHome: true,
       aboutOrder: 1,
@@ -68,9 +161,23 @@ export function getDefaultRoster(): OrganizationPersonDTO[] {
     },
     {
       id: 'seed-person-2',
-      name: 'सुनील महाराज',
-      role: 'प्रदेश प्रभारी',
-      bio: 'प्रदेश स्तर पर संगठन, सेवा कार्यक्रम और क्षेत्रीय समन्वय की जिम्मेदारी संभालते हैं।',
+      content: createLocalizedPersonContent(
+        {
+          name: 'Sunil Maharaj',
+          role: 'State In-Charge',
+          bio: 'Handles state-level organisation building, seva programmes, and regional coordination.',
+        },
+        {
+          name: 'सुनील महाराज',
+          role: 'प्रदेश प्रभारी',
+          bio: 'प्रदेश स्तर पर संगठन, सेवा कार्यक्रम और क्षेत्रीय समन्वय की जिम्मेदारी संभालते हैं।',
+        },
+        {
+          name: 'सुनील महाराज',
+          role: 'प्रदेश प्रभारी',
+          bio: 'राज्यस्तरीय संघटन, सेवा कार्यक्रम आणि प्रादेशिक समन्वयाची जबाबदारी सांभाळतात.',
+        }
+      ),
       showOnAbout: true,
       showOnHome: true,
       aboutOrder: 2,
@@ -78,9 +185,23 @@ export function getDefaultRoster(): OrganizationPersonDTO[] {
     },
     {
       id: 'seed-person-3',
-      name: 'सेवा संयोजक',
-      role: 'समाज सेवा प्रकोष्ठ',
-      bio: 'भंडारा, राहत कार्य, धार्मिक आयोजन और स्थानीय सेवा गतिविधियों का संचालन करते हैं।',
+      content: createLocalizedPersonContent(
+        {
+          name: 'Seva Coordinator',
+          role: 'Social Service Cell',
+          bio: 'Coordinates bhandara, relief work, religious events, and local service activities.',
+        },
+        {
+          name: 'सेवा संयोजक',
+          role: 'समाज सेवा प्रकोष्ठ',
+          bio: 'भंडारा, राहत कार्य, धार्मिक आयोजन और स्थानीय सेवा गतिविधियों का संचालन करते हैं।',
+        },
+        {
+          name: 'सेवा संयोजक',
+          role: 'समाजसेवा प्रकोष्ठ',
+          bio: 'भंडारा, मदतकार्य, धार्मिक आयोजन आणि स्थानिक सेवा उपक्रमांचे समन्वयन करतात.',
+        }
+      ),
       showOnAbout: true,
       showOnHome: true,
       aboutOrder: 3,
@@ -88,9 +209,23 @@ export function getDefaultRoster(): OrganizationPersonDTO[] {
     },
     {
       id: 'seed-person-4',
-      name: 'युवा प्रकोष्ठ प्रमुख',
-      role: 'युवा संगठन',
-      bio: 'युवाओं को राष्ट्र, धर्म और समाज सेवा से जोड़ने वाले प्रशिक्षण और अभियानों को संभालते हैं।',
+      content: createLocalizedPersonContent(
+        {
+          name: 'Youth Wing Lead',
+          role: 'Youth Organisation',
+          bio: 'Runs training programmes and campaigns that connect youth with dharma, nation, and service.',
+        },
+        {
+          name: 'युवा प्रकोष्ठ प्रमुख',
+          role: 'युवा संगठन',
+          bio: 'युवाओं को राष्ट्र, धर्म और समाज सेवा से जोड़ने वाले प्रशिक्षण और अभियानों को संभालते हैं।',
+        },
+        {
+          name: 'युवा प्रकोष्ठ प्रमुख',
+          role: 'युवा संघटन',
+          bio: 'युवकांना राष्ट्र, धर्म आणि समाजसेवेशी जोडणारे प्रशिक्षण व अभियानांचे नेतृत्व करतात.',
+        }
+      ),
       showOnAbout: true,
       showOnHome: true,
       aboutOrder: 4,
@@ -314,7 +449,86 @@ export function parseBanners(body?: string | null): BannerDTO[] {
   }
 }
 
-export function parseRoster(body?: string | null): OrganizationPersonDTO[] {
+function parseRequiredPersonLanguageContent(
+  value: unknown
+): OrganizationPersonLanguageContentDTO | null {
+  if (!value || typeof value !== 'object') {
+    return null;
+  }
+
+  const record = value as Record<string, unknown>;
+  const name = typeof record.name === 'string' ? record.name.trim() : '';
+  const role = typeof record.role === 'string' ? record.role.trim() : '';
+
+  if (!name || !role) {
+    return null;
+  }
+
+  return {
+    name,
+    role,
+    bio: normalizeOptionalString(record.bio),
+  };
+}
+
+function parseOptionalPersonLanguageContent(
+  value: unknown
+): Partial<OrganizationPersonLanguageContentDTO> | undefined {
+  if (!value || typeof value !== 'object') {
+    return undefined;
+  }
+
+  const record = value as Record<string, unknown>;
+  const nextValue: Partial<OrganizationPersonLanguageContentDTO> = {};
+
+  if (typeof record.name === 'string' && record.name.trim()) {
+    nextValue.name = record.name.trim();
+  }
+
+  if (typeof record.role === 'string' && record.role.trim()) {
+    nextValue.role = record.role.trim();
+  }
+
+  if (typeof record.bio === 'string' && record.bio.trim()) {
+    nextValue.bio = record.bio.trim();
+  }
+
+  return Object.keys(nextValue).length ? nextValue : undefined;
+}
+
+function parsePersonContent(
+  record: Record<string, unknown>
+): LocalizedOrganizationPersonContentDTO | null {
+  if (record.content && typeof record.content === 'object') {
+    const contentRecord = record.content as Record<string, unknown>;
+    const english = parseRequiredPersonLanguageContent(contentRecord.en);
+
+    if (english) {
+      return {
+        en: english,
+        hi: parseOptionalPersonLanguageContent(contentRecord.hi),
+        mr: parseOptionalPersonLanguageContent(contentRecord.mr),
+      };
+    }
+  }
+
+  const legacyName = typeof record.name === 'string' ? record.name.trim() : '';
+  const legacyRole = typeof record.role === 'string' ? record.role.trim() : '';
+
+  if (!legacyName || !legacyRole) {
+    return null;
+  }
+
+  return {
+    en: {
+      name: legacyName,
+      role: legacyRole,
+      bio: normalizeOptionalString(record.bio),
+    },
+  };
+}
+
+export function parseRoster(body?: string | null): AdminOrganizationPersonDTO[] {
   const fallback = getDefaultRoster();
 
   if (!body) {
@@ -332,20 +546,33 @@ export function parseRoster(body?: string | null): OrganizationPersonDTO[] {
       .filter((item) => item && typeof item === 'object')
       .map((item) => {
         const record = item as Record<string, unknown>;
+        const content = parsePersonContent(record);
+
         return {
           id: String(record.id || '').trim(),
-          name: String(record.name || '').trim(),
-          role: String(record.role || '').trim(),
+          content,
           photoUrl: typeof record.photoUrl === 'string' ? record.photoUrl : undefined,
           photoKey: typeof record.photoKey === 'string' ? record.photoKey : undefined,
-          bio: typeof record.bio === 'string' ? record.bio : undefined,
           showOnAbout: record.showOnAbout !== false,
           showOnHome: record.showOnHome !== false,
           aboutOrder: Number(record.aboutOrder || 0),
           homeOrder: Number(record.homeOrder || 0),
-        } satisfies OrganizationPersonDTO;
+        };
       })
-      .filter((person) => person.id && person.name && person.role);
+      .filter((person) => person.id && person.content)
+      .map(
+        (person) =>
+          ({
+            id: person.id,
+            content: person.content!,
+            photoUrl: person.photoUrl,
+            photoKey: person.photoKey,
+            showOnAbout: person.showOnAbout,
+            showOnHome: person.showOnHome,
+            aboutOrder: person.aboutOrder,
+            homeOrder: person.homeOrder,
+          }) satisfies AdminOrganizationPersonDTO
+      );
 
     return people.length ? sortPeople(people) : fallback;
   } catch {
@@ -368,14 +595,20 @@ export function getResolvedAboutContent(
   return localizedContent.en;
 }
 
-export function getFeaturedPeople(people: OrganizationPersonDTO[]) {
+export function getFeaturedPeople(
+  people: AdminOrganizationPersonDTO[],
+  language: Language
+) {
   return people
     .filter((person) => person.showOnHome)
     .slice()
     .sort((left, right) => left.homeOrder - right.homeOrder)
-    .slice(0, 4);
+    .slice(0, 4)
+    .map((person) => resolveOrganizationPerson(person, language));
 }
 
-export function getAboutPeople(people: OrganizationPersonDTO[]) {
-  return sortPeople(people.filter((person) => person.showOnAbout));
+export function getAboutPeople(people: AdminOrganizationPersonDTO[], language: Language) {
+  return sortPeople(people.filter((person) => person.showOnAbout)).map((person) =>
+    resolveOrganizationPerson(person, language)
+  );
 }

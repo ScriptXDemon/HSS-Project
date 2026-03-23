@@ -3,6 +3,7 @@ import { AppError } from '../errors';
 
 const requireAdminSessionMock = vi.fn();
 const updateDonationStatusMock = vi.fn();
+const updateOrganizationPersonMock = vi.fn();
 const getDbMock = vi.fn();
 
 vi.mock('@/lib/server-auth', () => ({
@@ -11,6 +12,7 @@ vi.mock('@/lib/server-auth', () => ({
 
 vi.mock('@/lib/services/admin-dashboard', () => ({
   updateDonationStatus: updateDonationStatusMock,
+  updateOrganizationPerson: updateOrganizationPersonMock,
 }));
 
 vi.mock('@/lib/db', () => ({
@@ -24,6 +26,7 @@ describe('admin routes and readiness', () => {
     process.env = { ...originalEnv };
     requireAdminSessionMock.mockReset();
     updateDonationStatusMock.mockReset();
+    updateOrganizationPersonMock.mockReset();
     getDbMock.mockReset();
   });
 
@@ -102,5 +105,41 @@ describe('admin routes and readiness', () => {
 
     expect(response.status).toBe(503);
     expect(payload.reason).toContain('MONGODB_URI');
+  });
+
+  it('treats unchecked roster visibility boxes as false', async () => {
+    process.env = {
+      ...process.env,
+      APP_ORIGIN: 'https://hsss-project.netlify.app',
+    };
+    requireAdminSessionMock.mockResolvedValue({ user: { id: 'admin-1', role: 'SUPER_ADMIN' } });
+    updateOrganizationPersonMock.mockResolvedValue({ id: 'person-1' });
+    const { PUT } = await import('@/app/api/admin/about/people/[id]/route');
+
+    const formData = new FormData();
+    formData.set('nameEn', 'Aditi Sharma');
+    formData.set('roleEn', 'State Convenor');
+    formData.set('aboutOrder', '1');
+    formData.set('homeOrder', '1');
+
+    const response = await PUT(
+      new Request('https://example.com/api/admin/about/people/person-1', {
+        method: 'PUT',
+        headers: {
+          origin: 'https://hsss-project.netlify.app',
+        },
+        body: formData,
+      }),
+      { params: Promise.resolve({ id: 'person-1' }) }
+    );
+
+    expect(response.status).toBe(200);
+    expect(updateOrganizationPersonMock).toHaveBeenCalledWith(
+      'person-1',
+      expect.objectContaining({
+        showOnAbout: false,
+        showOnHome: false,
+      })
+    );
   });
 });

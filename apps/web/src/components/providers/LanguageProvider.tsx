@@ -15,6 +15,7 @@ import {
   normalizeLanguage,
   type Language,
 } from '@/lib/i18n';
+import { useRouteTransition } from './RouteTransitionProvider';
 
 interface LanguageContextValue {
   language: Language;
@@ -34,16 +35,22 @@ export default function LanguageProvider({
   children,
 }: LanguageProviderProps) {
   const router = useRouter();
+  const { startLoading } = useRouteTransition();
   const [language, setLanguageState] = useState<Language>(normalizeLanguage(initialLanguage));
 
   const setLanguage = useCallback(
     (nextLanguage: Language) => {
+      if (nextLanguage === language) {
+        return;
+      }
+
+      startLoading();
       setLanguageState(nextLanguage);
       document.cookie = `${LANGUAGE_COOKIE_NAME}=${nextLanguage}; path=/; max-age=31536000; samesite=lax`;
       window.localStorage.setItem(LANGUAGE_COOKIE_NAME, nextLanguage);
       router.refresh();
     },
-    [router]
+    [language, router, startLoading]
   );
 
   const value = useMemo(

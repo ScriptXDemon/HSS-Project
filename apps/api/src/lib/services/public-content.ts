@@ -44,7 +44,7 @@ function createEmptyPaginatedResult<T>(page: number, limit: number): PaginatedRe
 }
 
 export function parseLeadershipEntries(body?: string | null): OrganizationPersonDTO[] {
-  return getAboutPeople(parseRoster(body));
+  return getAboutPeople(parseRoster(body), 'en');
 }
 
 async function getOrganizationSiteContent() {
@@ -76,7 +76,7 @@ export async function getHomePageContent(language: Language = 'en'): Promise<Hom
 
   return {
     banners: banners.length ? banners : getDefaultBanners(),
-    featuredPeople: getFeaturedPeople(content.roster),
+    featuredPeople: getFeaturedPeople(content.roster, language),
   };
 }
 
@@ -90,7 +90,7 @@ export async function getAboutPageContent(language: Language = 'en'): Promise<Ab
 
   return {
     content: getResolvedAboutContent(content.about, language),
-    people: getAboutPeople(content.roster),
+    people: getAboutPeople(content.roster, language),
   };
 }
 

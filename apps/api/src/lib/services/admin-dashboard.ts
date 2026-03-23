@@ -1,8 +1,9 @@
 import { randomUUID } from 'crypto';
 import type {
+  AdminOrganizationPersonDTO,
   BannerDTO,
   LocalizedAboutContentDTO,
-  OrganizationPersonDTO,
+  LocalizedOrganizationPersonContentDTO,
 } from '@hss/domain';
 import { getDb } from '@/lib/db';
 import type {
@@ -33,6 +34,7 @@ import {
   parseAboutContent,
   parseBanners,
   parseRoster,
+  resolveLocalizedOrganizationPersonContent,
 } from './organization-content';
 import { normalizeOptionalString } from './users';
 
@@ -83,11 +85,17 @@ export interface CreateAdminEventInput {
   video?: File | null;
 }
 
+export type UpdateAdminEventInput = CreateAdminEventInput;
+
 export interface CreateAdminGalleryInput {
   title: string;
   description?: string;
   coverImage?: File | null;
   images: File[];
+}
+
+export interface UpdateAdminGalleryInput extends Omit<CreateAdminGalleryInput, 'images'> {
+  images?: File[];
 }
 
 export interface DonationVerificationInput {
@@ -144,7 +152,7 @@ function slugify(value: string) {
     .replace(/-{2,}/g, '-');
 }
 
-function sortPeople(people: OrganizationPersonDTO[]) {
+function sortPeople(people: AdminOrganizationPersonDTO[]) {
   return people
     .slice()
     .sort((left, right) => {
@@ -152,7 +160,9 @@ function sortPeople(people: OrganizationPersonDTO[]) {
         return left.aboutOrder - right.aboutOrder;
       }
 
-      return left.name.localeCompare(right.name);
+      return resolveLocalizedOrganizationPersonContent(left.content, 'en').name.localeCompare(
+        resolveLocalizedOrganizationPersonContent(right.content, 'en').name
+      );
     });
 }
 
@@ -256,7 +266,7 @@ export async function getAdminContentData() {
 
 export async function getAdminAboutContentData(): Promise<{
   about: LocalizedAboutContentDTO;
-  people: OrganizationPersonDTO[];
+  people: AdminOrganizationPersonDTO[];
 }> {
   const db = await getDb();
   const [aboutRecord, rosterRecord] = await Promise.all([
@@ -278,10 +288,52 @@ export async function updateAdminAboutContent(content: LocalizedAboutContentDTO)
   });
 }
 
+function normalizePersonLanguageContent(
+  content?: Partial<LocalizedOrganizationPersonContentDTO['en']>
+) {
+  if (!content) {
+    return undefined;
+  }
+
+  const normalized = {
+    name: typeof content.name === 'string' ? content.name.trim() : '',
+    role: typeof content.role === 'string' ? content.role.trim() : '',
+    bio: normalizeOptionalString(content.bio),
+  };
+
+  if (!normalized.name && !normalized.role && !normalized.bio) {
+    return undefined;
+  }
+
+  return {
+    ...(normalized.name ? { name: normalized.name } : {}),
+    ...(normalized.role ? { role: normalized.role } : {}),
+    ...(normalized.bio ? { bio: normalized.bio } : {}),
+  };
+}
+
+function preparePersonContent(input: LocalizedOrganizationPersonContentDTO) {
+  const english = normalizePersonLanguageContent(input.en);
+  const hindi = normalizePersonLanguageContent(input.hi);
+  const marathi = normalizePersonLanguageContent(input.mr);
+
+  if (!english?.name || !english.role) {
+    throw new AppError('Person English name and role are required', 400);
+  }
+
+  return {
+    en: {
+      name: english.name,
+      role: english.role,
+      bio: english.bio,
+    },
+    ...(hindi ? { hi: hindi } : {}),
+    ...(marathi ? { mr: marathi } : {}),
+  } satisfies LocalizedOrganizationPersonContentDTO;
+}
+
 export async function createOrganizationPerson(input: {
-  name: string;
-  role: string;
-  bio?: string;
+  content: LocalizedOrganizationPersonContentDTO;
   showOnAbout?: boolean;
   showOnHome?: boolean;
   aboutOrder?: number;
@@ -306,11 +358,9 @@ export async function createOrganizationPerson(input: {
       photoUrl = uploadedPhoto.url;
     }
 
-    const person: OrganizationPersonDTO = {
+    const person: AdminOrganizationPersonDTO = {
       id: randomUUID(),
-      name: input.name.trim(),
-      role: input.role.trim(),
-      bio: normalizeOptionalString(input.bio),
+      content: preparePersonContent(input.content),
       photoUrl,
       photoKey: uploadedPhotoKey,
       showOnAbout: input.showOnAbout ?? true,
@@ -318,10 +368,6 @@ export async function createOrganizationPerson(input: {
       aboutOrder: input.aboutOrder ?? people.length + 1,
       homeOrder: input.homeOrder ?? people.length + 1,
     };
-
-    if (!person.name || !person.role) {
-      throw new AppError('Person name and role are required', 400);
-    }
 
     const nextPeople = sortPeople([...people, person]);
     await db.siteContent.upsertByKey(ORGANIZATION_ROSTER_KEY, {
@@ -341,9 +387,7 @@ export async function createOrganizationPerson(input: {
 export async function updateOrganizationPerson(
   personId: string,
   input: {
-    name: string;
-    role: string;
-    bio?: string;
+    content: LocalizedOrganizationPersonContentDTO;
     showOnAbout?: boolean;
     showOnHome?: boolean;
     aboutOrder?: number;
@@ -374,14 +418,13 @@ export async function updateOrganizationPerson(
       uploadedPhotoUrl = uploadedPhoto.url;
     }
 
+    const content = preparePersonContent(input.content);
     const nextPeople = sortPeople(
       people.map((entry) =>
         entry.id === personId
           ? {
               ...entry,
-              name: input.name.trim(),
-              role: input.role.trim(),
-              bio: normalizeOptionalString(input.bio),
+              content,
               showOnAbout: input.showOnAbout ?? entry.showOnAbout,
               showOnHome: input.showOnHome ?? entry.showOnHome,
               aboutOrder: input.aboutOrder ?? entry.aboutOrder,
@@ -601,6 +644,16 @@ export async function getAdminSettingsData(): Promise<Array<ISiteSetting | { key
   ];
 }
 
+function collectUploadKeys(values: Array<string | undefined>) {
+  return Array.from(
+    new Set(
+      values
+        .map((value) => extractUploadKeyFromUrl(value))
+        .filter((value): value is string => Boolean(value))
+    )
+  );
+}
+
 export async function createAdminEvent(input: CreateAdminEventInput) {
   const normalizedTitle = input.title.trim();
   const normalizedDescription = input.description.trim();
@@ -664,6 +717,122 @@ export async function createAdminEvent(input: CreateAdminEventInput) {
     }
     throw error;
   }
+}
+
+export async function updateAdminEvent(eventId: string, input: UpdateAdminEventInput) {
+  const db = await getDb();
+  const event = await db.event.findById(eventId);
+
+  if (!event) {
+    throw new AppError('Event not found', 404);
+  }
+
+  const normalizedTitle = input.title.trim();
+  const normalizedDescription = input.description.trim();
+
+  if (normalizedTitle.length < 3) {
+    throw new AppError('Event title is required', 400);
+  }
+
+  if (normalizedDescription.length < 10) {
+    throw new AppError('Event description is required', 400);
+  }
+
+  if (!input.date || Number.isNaN(Date.parse(input.date))) {
+    throw new AppError('Valid event date is required', 400);
+  }
+
+  let uploadedCoverKey: string | undefined;
+  let uploadedVideoKey: string | undefined;
+  let uploadedCoverUrl: string | undefined;
+  let uploadedVideoUrl: string | undefined;
+
+  try {
+    if (input.coverImage && input.coverImage.size > 0) {
+      const uploadedCover = await uploadImageFile(input.coverImage, {
+        folder: 'events/images',
+        maxSizeBytes: uploadLimits.galleryAsset,
+        visibility: 'public',
+      });
+      uploadedCoverKey = uploadedCover.key;
+      uploadedCoverUrl = uploadedCover.url;
+    }
+
+    if (input.video && input.video.size > 0) {
+      const uploadedVideo = await uploadMediaFile(input.video, {
+        folder: 'events/videos',
+        maxSizeBytes: uploadLimits.eventVideo,
+        visibility: 'public',
+      });
+      uploadedVideoKey = uploadedVideo.key;
+      uploadedVideoUrl = uploadedVideo.url;
+    }
+
+    const updatedEvent = await db.event.update(eventId, {
+      title: normalizedTitle,
+      description: normalizedDescription,
+      date: new Date(input.date),
+      venue: normalizeOptionalString(input.venue),
+      isPublished: input.isPublished ?? true,
+      coverImage: uploadedCoverUrl ?? event.coverImage,
+      videoUrl: uploadedVideoUrl ?? event.videoUrl,
+    });
+
+    if (!updatedEvent) {
+      throw new AppError('Unable to update event', 500);
+    }
+
+    if (uploadedCoverKey) {
+      const previousCoverKey = extractUploadKeyFromUrl(event.coverImage);
+      if (previousCoverKey) {
+        await deleteUploadedFile(previousCoverKey).catch(() => undefined);
+      }
+    }
+
+    if (uploadedVideoKey) {
+      const previousVideoKey = extractUploadKeyFromUrl(event.videoUrl);
+      if (previousVideoKey) {
+        await deleteUploadedFile(previousVideoKey).catch(() => undefined);
+      }
+    }
+
+    return updatedEvent;
+  } catch (error) {
+    if (uploadedCoverKey) {
+      await deleteUploadedFile(uploadedCoverKey).catch(() => undefined);
+    }
+    if (uploadedVideoKey) {
+      await deleteUploadedFile(uploadedVideoKey).catch(() => undefined);
+    }
+    throw error;
+  }
+}
+
+export async function deleteAdminEvent(eventId: string) {
+  const db = await getDb();
+  const event = await db.event.findById(eventId);
+
+  if (!event) {
+    throw new AppError('Event not found', 404);
+  }
+
+  await db.event.delete(eventId);
+
+  const cleanupResults = await Promise.allSettled(
+    collectUploadKeys([event.coverImage, event.videoUrl]).map((uploadKey) =>
+      deleteUploadedFile(uploadKey)
+    )
+  );
+  const failedCleanup = cleanupResults.filter((result) => result.status === 'rejected');
+
+  if (failedCleanup.length) {
+    console.warn('Event media cleanup was incomplete after deletion.', {
+      eventId,
+      failedCleanup: failedCleanup.length,
+    });
+  }
+
+  return true;
 }
 
 export async function createAdminGallery(input: CreateAdminGalleryInput) {
@@ -737,6 +906,95 @@ export async function createAdminActivity(input: CreateAdminGalleryInput) {
   return createAdminGallery(input);
 }
 
+export async function updateAdminGallery(activityId: string, input: UpdateAdminGalleryInput) {
+  const normalizedTitle = input.title.trim();
+
+  if (normalizedTitle.length < 2) {
+    throw new AppError('Album title is required', 400);
+  }
+
+  const db = await getDb();
+  const activity = await db.galleryAlbum.findWithItems(activityId);
+
+  if (!activity) {
+    throw new AppError('Activity not found', 404);
+  }
+
+  const uploadedKeys: string[] = [];
+  const uploadedImages: string[] = [];
+  let uploadedCoverKey: string | undefined;
+  let uploadedCoverUrl: string | undefined;
+
+  try {
+    if (input.coverImage && input.coverImage.size > 0) {
+      const uploadedCover = await uploadImageFile(input.coverImage, {
+        folder: 'gallery/covers',
+        maxSizeBytes: uploadLimits.galleryAsset,
+        visibility: 'public',
+      });
+      uploadedCoverKey = uploadedCover.key;
+      uploadedCoverUrl = uploadedCover.url;
+      uploadedKeys.push(uploadedCover.key);
+    }
+
+    for (const image of input.images ?? []) {
+      const uploadedImage = await uploadImageFile(image, {
+        folder: 'gallery/items',
+        maxSizeBytes: uploadLimits.galleryAsset,
+        visibility: 'public',
+      });
+      uploadedKeys.push(uploadedImage.key);
+      uploadedImages.push(uploadedImage.url);
+    }
+
+    const updatedAlbum = await db.galleryAlbum.update(activityId, {
+      title: normalizedTitle,
+      description: normalizeOptionalString(input.description),
+      coverImage: uploadedCoverUrl ?? activity.coverImage,
+    });
+
+    if (!updatedAlbum) {
+      throw new AppError('Unable to update activity', 500);
+    }
+
+    const nextSortOrder =
+      activity.items.reduce((highest, item) => Math.max(highest, item.sortOrder), -1) + 1;
+
+    await Promise.all(
+      uploadedImages.map((url, index) =>
+        db.galleryItem.create({
+          albumId: activityId,
+          type: 'IMAGE',
+          url,
+          thumbnail: url,
+          caption: undefined,
+          sortOrder: nextSortOrder + index,
+        })
+      )
+    );
+
+    if (uploadedCoverKey) {
+      const oldCoverKey = extractUploadKeyFromUrl(activity.coverImage);
+      const coverStillUsedInItems = activity.items.some(
+        (item) => item.url === activity.coverImage || item.thumbnail === activity.coverImage
+      );
+
+      if (oldCoverKey && !coverStillUsedInItems) {
+        await deleteUploadedFile(oldCoverKey).catch(() => undefined);
+      }
+    }
+
+    return updatedAlbum;
+  } catch (error) {
+    await Promise.all(uploadedKeys.map((key) => deleteUploadedFile(key).catch(() => undefined)));
+    throw error;
+  }
+}
+
+export async function updateAdminActivity(activityId: string, input: UpdateAdminGalleryInput) {
+  return updateAdminGallery(activityId, input);
+}
+
 export async function deleteAdminActivity(activityId: string) {
   const db = await getDb();
   const activity = await db.galleryAlbum.findWithItems(activityId);
@@ -747,13 +1005,10 @@ export async function deleteAdminActivity(activityId: string) {
 
   await db.galleryAlbum.delete(activityId);
 
-  const uploadKeys = Array.from(
-    new Set(
-      [activity.coverImage, ...activity.items.flatMap((item) => [item.url, item.thumbnail])]
-        .map((value) => extractUploadKeyFromUrl(value))
-        .filter((value): value is string => Boolean(value))
-    )
-  );
+  const uploadKeys = collectUploadKeys([
+    activity.coverImage,
+    ...activity.items.flatMap((item) => [item.url, item.thumbnail]),
+  ]);
 
   const cleanupResults = await Promise.allSettled(
     uploadKeys.map((uploadKey) => deleteUploadedFile(uploadKey))

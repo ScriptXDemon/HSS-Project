@@ -2,5 +2,9 @@
 import { serverApiFetch } from './api-client';
 
 export async function auth() {
-  return serverApiFetch<SessionResponse>('/auth/session');
+  try {
+    return await serverApiFetch<SessionResponse>('/auth/session');
+  } catch {
+    return { user: null } satisfies SessionResponse;
+  }
 }

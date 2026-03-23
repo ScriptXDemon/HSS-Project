@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/components/providers/LanguageProvider';
+import { useRouteTransition } from '@/components/providers/RouteTransitionProvider';
 import { pickLanguage } from '@/lib/i18n';
 
 const copy = {
@@ -57,6 +58,7 @@ const copy = {
 
 function LoginForm() {
   const router = useRouter();
+  const { startLoading } = useRouteTransition();
   const searchParams = useSearchParams();
   const { language } = useLanguage();
   const text = useMemo(() => pickLanguage(language, copy), [language]);
@@ -89,6 +91,7 @@ function LoginForm() {
           callbackUrl === '/' && session?.user?.role && ['ADMIN', 'SUPER_ADMIN'].includes(session.user.role)
             ? '/admin'
             : callbackUrl;
+        startLoading();
         router.push(destination);
         router.refresh();
       }

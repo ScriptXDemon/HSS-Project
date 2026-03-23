@@ -157,6 +157,18 @@ export interface LeadershipMemberDTO {
   bio?: string;
 }
 
+export interface OrganizationPersonLanguageContentDTO {
+  name: string;
+  role: string;
+  bio?: string;
+}
+
+export interface LocalizedOrganizationPersonContentDTO {
+  en: OrganizationPersonLanguageContentDTO;
+  hi?: Partial<OrganizationPersonLanguageContentDTO>;
+  mr?: Partial<OrganizationPersonLanguageContentDTO>;
+}
+
 export interface BannerDTO {
   id: string;
   imageUrl: string;
@@ -170,6 +182,17 @@ export interface BannerDTO {
 
 export interface OrganizationPersonDTO extends LeadershipMemberDTO {
   id: string;
+  photoKey?: string;
+  showOnAbout: boolean;
+  showOnHome: boolean;
+  aboutOrder: number;
+  homeOrder: number;
+}
+
+export interface AdminOrganizationPersonDTO {
+  id: string;
+  content: LocalizedOrganizationPersonContentDTO;
+  photoUrl?: string;
   photoKey?: string;
   showOnAbout: boolean;
   showOnHome: boolean;
@@ -277,7 +300,7 @@ export interface AdminBannersResponse {
 
 export interface AdminAboutContentResponse {
   about: LocalizedAboutContentDTO;
-  people: OrganizationPersonDTO[];
+  people: AdminOrganizationPersonDTO[];
 }
 
 export interface AdminSettingsResponse {
